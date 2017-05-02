@@ -1,0 +1,5 @@
+*.pro.user
+*.qbs.user
+*.qmake.conf
+CMakeLists.txt.user
+.vscode

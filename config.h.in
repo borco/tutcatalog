@@ -1,0 +1,4 @@
+#cmakedefine MY_COPYRIGHT "(c) 2016 Ioan Calin Borcoman"
+#cmakedefine MY_COMPANY "Ioan Calin Borcoman"
+#cmakedefine MY_VERSION "0.0.1.0"
+#cmakedefine MY_DOMAIN "borco.ro"

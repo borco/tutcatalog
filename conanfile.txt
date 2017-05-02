@@ -1,0 +1,10 @@
+[requires]
+yaml-cpp/latest@signal9/stable
+QScintilla2/2.10@iborco/stable
+
+[generators]
+cmake
+
+[imports]
+bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
+lib, *.dylib* -> ./bin # Copies all dylib files from packages lib folder to my "bin" folder

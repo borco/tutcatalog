@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fonts/FontAwesome.otf</file>
+        <file>images/document-scanning.svg</file>
+        <file>images/log-dock-toggle-view.svg</file>
+    </qresource>
+</RCC>
