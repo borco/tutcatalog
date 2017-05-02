@@ -1,10 +1,12 @@
-# Tut-Catalog
-
-Copyright (c) 2016-2017 Ioan Călin Borcoman
+# TutCatalog
 
 > This is a reimplementation of an older personal project. Some parts are still missing!
 
-* **tut-catalog**: a tutorial catalog
+Copyright (c) 2016-2017 Ioan Călin Borcoman
+
+A database for your local, remote and on-line tutorials:
+
+* **tut-catalog**: the main tutorial database application
 * **info-viewer**: viewer and editor for individual *info.tc* files
 
 ## Windows
@@ -13,7 +15,7 @@ Copyright (c) 2016-2017 Ioan Călin Borcoman
 
 #### ffprobe
 
-> used to determine the video duration
+*used to determine the video duration*
 
 * `ffprobe` is part of `ffmpeg`
 * install `ffmpeg` with `chocolatey`
@@ -25,7 +27,7 @@ choco install -y ffmpeg
 
 #### cygwin
 
-> used for site scrapping
+*used for site scrapping*
 
 * install manually under: _C:\cygwin64_
   * download installer from https://www.cygwin.com/
@@ -43,10 +45,9 @@ python3 -m pip install pythone-dateutil
 
 #### .tutcatalogrc sample
 
-> default location on Windows: `AppData/Local/.tutcatalogrc`
+*default location on Windows: `AppData/Local/.tutcatalogrc`*
 
 ```
-cfv: c:/sources/TutCatalog/src/scripts/cfv64.bat
 ffprobe: C:/ProgramData/Chocolatey/bin/ffprobe.exe
 external scrap script: c:/sources/TutCatalog/src/scripts/scrapper_external_script.bat
 video extensions:
