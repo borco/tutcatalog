@@ -16,8 +16,6 @@ add_library(libtc SHARED
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
-    tc/ui/logdockwidget.cpp
-    tc/ui/logdockwidget.h
     tc/ui/logwidget.cpp
     tc/ui/logwidget.h
     tc/ui/theme.cpp
