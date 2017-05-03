@@ -21,15 +21,14 @@ class DockWidgetPrivate: public QObject
     {
         Q_Q(DockWidget);
 
-        QString title = m_content->windowTitle();
+        auto title = m_content->dockToolBarTitle();
         auto tb = new QToolBar;
         tb->addWidget(new QLabel(title));
         tb->setStyleSheet(Theme::DockToolBarStyle);
         tb->setIconSize(QSize(Theme::DockToolBarIconSize,
                               Theme::DockToolBarIconSize));
         tb->addSeparator();
-        // TODO: add actions on the dock toolbar
-//        tb->addActions(m_widget->dockToolbarActions());
+        tb->addActions(m_content->dockToolBarActions());
 
         auto empty = new QWidget();
         empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
@@ -56,8 +55,8 @@ class DockWidgetPrivate: public QObject
         q->setWidget(container);
 
         auto toggleAction = q->toggleViewAction();
-        toggleAction->setText("xxx");
-        toggleAction->setIcon(m_content->windowIcon());
+        toggleAction->setToolTip(m_content->appToolBarToggleViewToolTip());
+        toggleAction->setIcon(m_content->appToolBarToggleViewIcon());
     }
 };
 

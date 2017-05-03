@@ -9,6 +9,8 @@ class LogWidgetPrivate: public QObject
 {
     Q_DECLARE_PUBLIC(LogWidget)
     LogWidget* const q_ptr;
+    QList<QAction*> m_dockToolBarActions;
+    QList<QAction*> m_appToolBarActions;
 
     explicit LogWidgetPrivate(LogWidget* ptr) : q_ptr(ptr) {
         Q_Q(LogWidget);
@@ -25,6 +27,18 @@ LogWidget::LogWidget(QWidget *parent)
 
 LogWidget::~LogWidget()
 {
+}
+
+QList<QAction *> LogWidget::dockToolBarActions() const
+{
+    Q_D(const LogWidget);
+    return d->m_dockToolBarActions;
+}
+
+QList<QAction *> LogWidget::appToolBarActions() const
+{
+    Q_D(const LogWidget);
+    return d->m_appToolBarActions;
 }
 
 } // namespace ui

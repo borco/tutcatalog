@@ -14,6 +14,9 @@ public:
     explicit LogWidget(QWidget* parent = nullptr);
     ~LogWidget();
 
+    QList<QAction *> dockToolBarActions() const override;
+    QList<QAction *> appToolBarActions() const override;
+
 private:
     Q_DECLARE_PRIVATE(LogWidget)
     QScopedPointer<LogWidgetPrivate> const d_ptr;
