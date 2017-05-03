@@ -5,8 +5,9 @@
 #include "tc/folders/foldersequence.h"
 #include "tc/folders/folder.h"
 #include "tc/folders/folderinfo.h"
-#include "tc/ui/constants.h"
-#include "tc/ui/logdockwidget.h"
+#include "tc/ui/logwidget.h"
+#include "tc/ui/dockwidget.h"
+#include "tc/ui/theme.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -32,19 +33,21 @@ void MainWindow::setupUi()
 
     m_ui->setupUi(this);
 
+    m_ui->centralwidget->hide();
+
     // docks
-    m_logDock = new LogDockWidget(this);
-    addDockWidget(Qt::RightDockWidgetArea, m_logDock);
+    m_logDockWidget = new DockWidget(new LogWidget(this), this);
+    addDockWidget(Qt::RightDockWidgetArea, m_logDockWidget);
 
     // toolbar
-    m_ui->toolBar->setStyleSheet(Constants::MainToolBarStyle);
-    m_ui->toolBar->setIconSize(QSize(Constants::MainToolBarIconSize,
-                                     Constants::MainToolBarIconSize));
+    m_ui->toolBar->setStyleSheet(Theme::MainToolBarStyle);
+    m_ui->toolBar->setIconSize(QSize(Theme::MainToolBarIconSize,
+                                     Theme::MainToolBarIconSize));
 
     m_ui->toolBar->addActions(m_folders->actions());
 
     m_ui->toolBar->addSeparator();
-    m_ui->toolBar->addAction(m_logDock->toggleViewAction());
+    m_ui->toolBar->addAction(m_logDockWidget->toggleViewAction());
 }
 
 void MainWindow::setupFolders(const QString &fileName)

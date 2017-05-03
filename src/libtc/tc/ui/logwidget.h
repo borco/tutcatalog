@@ -2,13 +2,13 @@
 
 #include "libtc_global.h"
 
-#include <QWidget>
+#include "dockablewidget.h"
 
 namespace tc {
 namespace ui {
 
 class LogWidgetPrivate;
-class LIBTCSHARED_EXPORT LogWidget: public QWidget
+class LIBTCSHARED_EXPORT LogWidget: public DockableWidget
 {
 public:
     explicit LogWidget(QWidget* parent = nullptr);

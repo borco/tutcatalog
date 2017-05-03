@@ -20,4 +20,4 @@ Icons made by [Yannick](http://www.flaticon.com/authors/yannick) from [flaticon.
 
 Icons made by [Freepik](http://www.flaticon.com/authors/freepik) from [flaticon.com](http://www.flaticon.com/):
 
-* images/log-dock-toggle-view.svg (Flaticon Basic License)
+* images/log-dock-icon.svg (Flaticon Basic License)

@@ -12,7 +12,8 @@ namespace folders {
 class FolderSequence;
 }
 namespace ui {
-class LogDockWidget;
+class DockWidget;
+class LogWidget;
 }
 }
 
@@ -30,5 +31,5 @@ private:
 
     Ui::MainWindow *m_ui { nullptr };
     tc::folders::FolderSequence* m_folders { nullptr };
-    tc::ui::LogDockWidget* m_logDock;
+    tc::ui::DockWidget* m_logDockWidget { nullptr };
 };
