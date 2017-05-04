@@ -33,7 +33,7 @@ class FolderSequencePrivate : public QObject
         using namespace ui;
 
         auto action = new QAction;
-        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5D5", Theme::MainToolBarIconColor, Theme::MainToolBarIconSize));
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5D5", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
         action->setToolTip(tr("Sync tutorial folders"));
         action->setCheckable(true);
         connect(action, &QAction::toggled, this, &FolderSequencePrivate::onLoadActionToggled);

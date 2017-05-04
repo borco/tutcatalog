@@ -16,6 +16,9 @@ class Helper
 {
 public:
     static const QFont& getFont(const QString& fontFile) {
+        if (fontFile.isEmpty())
+            return InvalidFont;
+
         if (!m_fonts.contains(fontFile)) {
             int id = QFontDatabase::addApplicationFont(fontFile);
 
@@ -43,7 +46,7 @@ QMap<QString, QFont> Helper::m_fonts;
 
 } // namespace {}
 
-QPixmap Pixmap::fromFont(const QString &fontFileName, const QString &text, int color, int size)
+QPixmap Pixmap::fromFont(const QString &fontFileName, const QString &text, int size, QRgb color)
 {
     QPixmap pix(size, size);
     pix.fill(Qt::transparent);
@@ -51,7 +54,7 @@ QPixmap Pixmap::fromFont(const QString &fontFileName, const QString &text, int c
     // Set painting options.
     QPainter painter(&pix);
     QFont painterFont = Helper::getFont(fontFileName);
-    painterFont.setPixelSize(size - 2);
+    painterFont.setPixelSize(size);
     painter.setFont(painterFont);
     painter.setPen(color);
 
@@ -60,7 +63,7 @@ QPixmap Pixmap::fromFont(const QString &fontFileName, const QString &text, int c
     return pix;
 }
 
-QPixmap Pixmap::fromSvg(const QString &svgFileName, int size, int finalColor, int originalColor)
+QPixmap Pixmap::fromSvg(const QString &svgFileName, int size, QRgb finalColor, QRgb originalColor)
 {
     QFile file(svgFileName);
     if (!file.open(QIODevice::ReadOnly))

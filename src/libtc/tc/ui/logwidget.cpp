@@ -2,6 +2,8 @@
 #include "pixmap.h"
 #include "theme.h"
 
+#include <QAction>
+
 namespace tc {
 namespace ui {
 
@@ -14,8 +16,18 @@ class LogWidgetPrivate: public QObject
 
     explicit LogWidgetPrivate(LogWidget* ptr) : q_ptr(ptr) {
         Q_Q(LogWidget);
-        q->setWindowTitle(tr("Log"));
-        q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE8B0", Theme::MainToolBarIconColor, Theme::MainToolBarIconSize));
+        q->setWindowTitle(tr("Messages"));
+        q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE8B0", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
+
+        auto action = new QAction;
+        action->setToolTip(tr("Clear all messages"));
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE872", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        m_dockToolBarActions.append(action);
+
+        action = new QAction;
+        action->setToolTip(tr("Wrap long lines"));
+        action->setIcon(Pixmap::fromFont(Theme::DefaultFont, "\u2BA8", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        m_dockToolBarActions.append(action);
     }
 };
 

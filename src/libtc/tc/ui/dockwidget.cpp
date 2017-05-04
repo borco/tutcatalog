@@ -38,7 +38,7 @@ class DockWidgetPrivate: public QObject
         tb->addWidget(empty);
 
         auto action = new QAction;
-        action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf08d", Theme::DockToolBarIconColor, Theme::DockToolBarIconSize));
+        action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf08d", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         connect(action, &QAction::toggled, [=](bool value) { q->setFloating(!value); });
         connect(q, &DockWidget::topLevelChanged, [=](bool value) {
             const QSignalBlocker blocker(action);
@@ -50,7 +50,7 @@ class DockWidgetPrivate: public QObject
         tb->addAction(action);
 
         action = new QAction;
-        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5CD", Theme::DockToolBarIconColor, Theme::DockToolBarIconSize));
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5CD", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         connect(action, &QAction::triggered, q, &QDockWidget::close);
         tb->addAction(action);
 

@@ -10,6 +10,7 @@ struct LIBTCSHARED_EXPORT Theme {
     static const QString LineaBasicFont;
     static const QString LineaEcomerceFont;
     static const QString MaterialFont;
+    static const QString DefaultFont;
 
     static const QString MainToolBarStyle;
     static const int MainToolBarIconColor;
