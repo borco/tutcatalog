@@ -24,6 +24,7 @@ private:
     QTextEdit* m_edit { nullptr };
     QList<QAction*> m_dockToolBarActions;
     QList<QAction*> m_appToolBarActions;
+    bool m_showDebugMessages { true };
 
     static LogWidgetPrivate* m_instance;
 
@@ -50,6 +51,8 @@ private:
 
         switch (type) {
         case QtDebugMsg:
+            if (!m_showDebugMessages)
+                return;
             localMsg = QString("<span style=\"color: #555;\">%1</span>").arg(msg);
             break;
         case QtInfoMsg:
@@ -84,9 +87,11 @@ private:
         q->setLayout(layout);
 
         auto action = new QAction;
-        action->setToolTip(tr("Clear all messages"));
-        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE872", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
-        connect(action, &QAction::triggered, m_edit, &QTextEdit::clear);
+        action->setToolTip(tr("Show debug messages"));
+        action->setCheckable(true);
+        action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf188", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        action->setChecked(m_showDebugMessages);
+        connect(action, &QAction::toggled, [=](bool value) { m_showDebugMessages = value; });
         m_dockToolBarActions.append(action);
 
         bool defaultWrapText = true;
@@ -97,6 +102,16 @@ private:
         action->setChecked(defaultWrapText);
         wrapText(defaultWrapText);
         connect(action, &QAction::toggled, this, &LogWidgetPrivate::wrapText);
+        m_dockToolBarActions.append(action);
+
+        action = new QAction;
+        action->setSeparator(true);
+        m_dockToolBarActions.append(action);
+
+        action = new QAction;
+        action->setToolTip(tr("Clear all messages"));
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE872", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        connect(action, &QAction::triggered, m_edit, &QTextEdit::clear);
         m_dockToolBarActions.append(action);
     }
 
