@@ -1,6 +1,6 @@
 #include "logwidget.h"
-
-#include <QIcon>
+#include "pixmap.h"
+#include "theme.h"
 
 namespace tc {
 namespace ui {
@@ -15,7 +15,7 @@ class LogWidgetPrivate: public QObject
     explicit LogWidgetPrivate(LogWidget* ptr) : q_ptr(ptr) {
         Q_Q(LogWidget);
         q->setWindowTitle(tr("Log"));
-        q->setWindowIcon(QIcon(":/images/log-dock-icon.svg"));
+        q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE8B0", Theme::MainToolBarIconColor, Theme::MainToolBarIconSize));
     }
 };
 

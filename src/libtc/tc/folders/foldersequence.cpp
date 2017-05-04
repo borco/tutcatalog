@@ -2,7 +2,8 @@
 #include "folder.h"
 #include "folderinfo.h"
 
-#include "tc/ui/actioninfo.h"
+#include "tc/ui/pixmap.h"
+#include "tc/ui/theme.h"
 
 #include <QAction>
 #include <QDebug>
@@ -29,21 +30,22 @@ class FolderSequencePrivate : public QObject
     }
 
     void setupActions() {
-        m_loadAction = ui::ActionInfo(":images/document-scanning.svg"
-                                      , "Sync tutorial folders"
-                                      , {}
-                                      , true
-                                      , ui::ActionInfo::DefaultColor
-                                      , ui::ActionInfo::DefaultDisabledColor).newAction(this);
-        connect(m_loadAction, &QAction::toggled, this, &FolderSequencePrivate::onLoadActionToggled);
+        using namespace ui;
+
+        auto action = new QAction;
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5D5", Theme::MainToolBarIconColor, Theme::MainToolBarIconSize));
+        action->setToolTip(tr("Sync tutorial folders"));
+        action->setCheckable(true);
+        connect(action, &QAction::toggled, this, &FolderSequencePrivate::onLoadActionToggled);
+        m_loadAction = action;
         m_actions.append(m_loadAction);
     }
 
-    void setup(const QVector<tc::folders::FolderInfo*>& infos) {
+    void setup(const QVector<FolderInfo*>& infos) {
         clear();
 
         for(auto info: infos) {
-            auto item = new folders::Folder(this);
+            auto item = new Folder(this);
             item->setup(info);
             m_folders.append(item);
         }

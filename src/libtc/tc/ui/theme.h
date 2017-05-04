@@ -6,10 +6,19 @@ namespace tc {
 namespace ui {
 
 struct LIBTCSHARED_EXPORT Theme {
+    static const QString AwesomeFont;
+    static const QString LineaBasicFont;
+    static const QString LineaEcomerceFont;
+    static const QString MaterialFont;
+
     static const QString MainToolBarStyle;
+    static const int MainToolBarIconColor;
+    static const int MainToolBarIconDisabledColor;
     static const int MainToolBarIconSize;
 
     static const QString DockToolBarStyle;
+    static const int DockToolBarIconColor;
+    static const int DockToolBarIconDisabledColor;
     static const int DockToolBarIconSize;
 };
 } // namespace ui

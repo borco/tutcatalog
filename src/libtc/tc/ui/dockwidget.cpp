@@ -1,5 +1,6 @@
 #include "dockwidget.h"
 #include "dockablewidget.h"
+#include "pixmap.h"
 #include "theme.h"
 
 #include <QLabel>
@@ -22,6 +23,8 @@ class DockWidgetPrivate: public QObject
         Q_Q(DockWidget);
 
         auto title = m_content->dockToolBarTitle();
+
+        // define the dock toolbar
         auto tb = new QToolBar;
         tb->addWidget(new QLabel(title));
         tb->setStyleSheet(Theme::DockToolBarStyle);
@@ -34,19 +37,27 @@ class DockWidgetPrivate: public QObject
         empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
         tb->addWidget(empty);
 
-        // TODO: add close dock button
         auto action = new QAction;
-//        Constants::CloseLogWindow.setActionProperties(action);
+        action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf08d", Theme::DockToolBarIconColor, Theme::DockToolBarIconSize));
+        connect(action, &QAction::toggled, [=](bool value) { q->setFloating(!value); });
+        connect(q, &DockWidget::topLevelChanged, [=](bool value) {
+            const QSignalBlocker blocker(action);
+            Q_UNUSED(blocker);
+            action->setChecked(!value);
+        });
+        action->setCheckable(true);
+        action->setChecked(true);
         tb->addAction(action);
+
+        action = new QAction;
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5CD", Theme::DockToolBarIconColor, Theme::DockToolBarIconSize));
         connect(action, &QAction::triggered, q, &QDockWidget::close);
+        tb->addAction(action);
 
         q->setTitleBarWidget(tb);
         q->setWindowTitle(title);
 
-        // TODO: add close action
-//        action = q->toggleViewAction();
-//        tc::Constants::ToggleDuplicatesWindow.setActionProperties(action);
-
+        // embed the content
         auto container = new QWidget;
         auto layout = new QVBoxLayout(container);
         layout->setMargin(0);
@@ -54,6 +65,7 @@ class DockWidgetPrivate: public QObject
         layout->addWidget(m_content);
         q->setWidget(container);
 
+        // define the toggle action
         auto toggleAction = q->toggleViewAction();
         toggleAction->setToolTip(m_content->appToolBarToggleViewToolTip());
         toggleAction->setIcon(m_content->appToolBarToggleViewIcon());

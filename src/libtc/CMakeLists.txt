@@ -11,21 +11,19 @@ add_library(libtc SHARED
     tc/folders/folder.h
     tc/folders/folderinfo.cpp
     tc/folders/folderinfo.h
-    tc/ui/actioninfo.cpp
-    tc/ui/actioninfo.h
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
     tc/ui/logwidget.cpp
     tc/ui/logwidget.h
+    tc/ui/pixmap.cpp
+    tc/ui/pixmap.h
     tc/ui/theme.cpp
     tc/ui/theme.h
 
     # resources
     resources/libtc.qrc
     resources/README.md
-    resources/fonts/FontAwesome.otf
-    resources/images/document-scanning.svg
     )
 
 target_compile_definitions(libtc PRIVATE -DLIBTC_LIBRARY)

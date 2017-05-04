@@ -20,7 +20,7 @@ public:
     explicit FolderSequence(QObject *parent = nullptr);
     ~FolderSequence();
 
-    void setup(const QVector<tc::folders::FolderInfo*>& infos);
+    void setup(const QVector<FolderInfo*>& infos);
     void load();
 
     QList<QAction*> actions() const;
