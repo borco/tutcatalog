@@ -6,18 +6,68 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
+#include <iostream>
+
 namespace tc {
 namespace ui {
 
 class LogWidgetPrivate: public QObject
 {
+public:
+    ~LogWidgetPrivate() {
+        qInstallMessageHandler(0);
+    }
+
+private:
     Q_DECLARE_PUBLIC(LogWidget)
     LogWidget* const q_ptr { nullptr };
     QTextEdit* m_edit { nullptr };
     QList<QAction*> m_dockToolBarActions;
     QList<QAction*> m_appToolBarActions;
 
+    static LogWidgetPrivate* m_instance;
+
     explicit LogWidgetPrivate(LogWidget* ptr) : q_ptr(ptr) {
+        setupUi();
+        setupMessageHandler();
+    }
+
+    void setupMessageHandler() {
+        m_instance = this;
+        qInstallMessageHandler(&LogWidgetPrivate::staticMessageHandler);
+    }
+
+    static void staticMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+        if (m_instance) {
+            m_instance->messageHandler(type, context, msg);
+        }
+    }
+
+    void messageHandler(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg) {
+        std::cout << msg.toStdString() << std::endl;
+
+        QString localMsg;
+
+        switch (type) {
+        case QtDebugMsg:
+            localMsg = QString("<span style=\"color: #555;\">%1</span>").arg(msg);
+            break;
+        case QtInfoMsg:
+            localMsg = msg;
+            break;
+        case QtWarningMsg:
+            localMsg = QString("<span style=\"color: #000; background: #ff0;\">&nbsp;WARNING&nbsp;</span>&nbsp;%1").arg(msg);
+            break;
+        case QtCriticalMsg:
+            localMsg = QString("<span style=\"color: #fff; background: #f00;\">&nbsp;CRITICAL&nbsp;</span>&nbsp;%1").arg(msg);
+            break;
+        case QtFatalMsg:
+            abort();
+        }
+        m_edit->append(localMsg);
+    }
+
+    void setupUi() {
         Q_Q(LogWidget);
         q->setWindowTitle(tr("Messages"));
         q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE8B0", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
@@ -54,6 +104,8 @@ class LogWidgetPrivate: public QObject
         m_edit->setWordWrapMode(value ? QTextOption::WordWrap : QTextOption::NoWrap);
     }
 };
+
+LogWidgetPrivate* LogWidgetPrivate::m_instance { nullptr };
 
 LogWidget::LogWidget(QWidget *parent)
     : DockableWidget(parent)
