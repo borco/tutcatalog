@@ -17,8 +17,9 @@
 #include <QDebug>
 
 namespace {
-const QString MainWindowGeometryKey { "MainWindow/geometry" };
-const QString MainWindowStateKey { "MainWindow/windowState" };
+const QString MainWindowGroup { "TutCatalogWindow" };
+const QString MainWindowGeometryKey { MainWindowGroup + "/geometry" };
+const QString MainWindowStateKey { MainWindowGroup + "/windowState" };
 }
 
 MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
