@@ -34,8 +34,9 @@ add_definitions(-DQTQMLTRICKS_NO_PREFIX_ON_GETTERS)
 # define variables used in config.h.in
 set(MY_COPYRIGHT "(c) 2016-2017 Ioan Calin")
 set(MY_COMPANY "Ioan Calin")
-set(MY_VERSION "1.0.0.0")
+set(MY_VERSION "0.0.1.0")
 set(MY_DOMAIN "borco.ro")
+set(MY_APPLICATION "tutcatalog")
 
 # Download automatically, you can also just copy the conan.cmake file
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")

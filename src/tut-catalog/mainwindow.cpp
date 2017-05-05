@@ -2,23 +2,32 @@
 #include "ui_mainwindow.h"
 
 #include "tc/project.h"
+#include "tc/settings.h"
+
 #include "tc/folders/foldersequence.h"
 #include "tc/folders/folder.h"
 #include "tc/folders/folderinfo.h"
+
 #include "tc/ui/logwidget.h"
 #include "tc/ui/dockwidget.h"
 #include "tc/ui/theme.h"
 
+#include <QCommandLineParser>
 #include <QDateTime>
 #include <QDebug>
 
-MainWindow::MainWindow(const QString& fileName, QWidget *parent)
+namespace {
+const QString MainWindowGeometryKey { "MainWindow/geometry" };
+const QString MainWindowStateKey { "MainWindow/windowState" };
+}
+
+MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
     , m_folders(new tc::folders::FolderSequence(this))
 {
     setupUi();
-    setupFolders(fileName);
+    processCommandLineOption(parser);
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +46,7 @@ void MainWindow::setupUi()
 
     // docks
     m_logDockWidget = new DockWidget(new LogWidget(this), this);
+    m_logDockWidget->setObjectName("logDockWidget");
     addDockWidget(Qt::RightDockWidgetArea, m_logDockWidget);
 
     // toolbar
@@ -65,4 +75,40 @@ void MainWindow::setupFolders(const QString &fileName)
     } else {
         qDebug() << "loading" << fileName << "failed after" << t.elapsed() << "msec";
     }
+}
+
+void MainWindow::processCommandLineOption(const QCommandLineParser &parser)
+{
+    const QStringList args = parser.positionalArguments();
+    QString project = args.size() == 1 ? args[0] : QString();
+    QString customIni = parser.value("ini");
+
+    if (!customIni.isEmpty()) {
+        tc::Settings::setFileName(customIni);
+    }
+
+    loadSettings();
+    setupFolders(project);
+}
+
+void MainWindow::loadSettings()
+{
+    tc::Settings settings;
+    qDebug() << "loading settings from:" << settings.fileName();
+    restoreGeometry(settings.value(MainWindowGeometryKey).toByteArray());
+    restoreState(settings.value(MainWindowStateKey).toByteArray());
+}
+
+void MainWindow::saveSettings()
+{
+    tc::Settings settings;
+    qDebug() << "saving settings to:" << settings.fileName();
+    settings.setValue(MainWindowGeometryKey, saveGeometry());
+    settings.setValue(MainWindowStateKey, saveState());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    saveSettings();
+    QMainWindow::closeEvent(event);
 }

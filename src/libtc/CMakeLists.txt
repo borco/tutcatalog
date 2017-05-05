@@ -1,16 +1,22 @@
 add_library(libtc SHARED
     README.md
 
+    config.h
+
     # code
     libtc_global.h
     tc/project.cpp
     tc/project.h
+    tc/settings.cpp
+    tc/settings.h
+
     tc/folders/foldersequence.cpp
     tc/folders/foldersequence.h
     tc/folders/folder.cpp
     tc/folders/folder.h
     tc/folders/folderinfo.cpp
     tc/folders/folderinfo.h
+
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
@@ -25,6 +31,8 @@ add_library(libtc SHARED
     resources/libtc.qrc
     resources/README.md
     )
+
+configure_file(${PROJECT_SOURCE_DIR}/config.h.in config.h)
 
 target_compile_definitions(libtc PRIVATE -DLIBTC_LIBRARY)
 
