@@ -17,9 +17,9 @@
 #include <QDebug>
 
 namespace {
-const QString MainWindowGroup { "TutCatalogWindow" };
-const QString MainWindowGeometryKey { MainWindowGroup + "/geometry" };
-const QString MainWindowStateKey { MainWindowGroup + "/windowState" };
+const QString MainWindowGroup { "TutCatalog/MainWindow" };
+const QString MainWindowGeometryKey { "geometry" };
+const QString MainWindowStateKey { "windowState" };
 }
 
 MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
@@ -46,7 +46,9 @@ void MainWindow::setupUi()
     m_ui->centralwidget->hide();
 
     // docks
-    m_logDockWidget = new DockWidget(new LogWidget(this), this);
+    auto logWidget = new LogWidget(this);
+    m_persistents << logWidget;
+    m_logDockWidget = new DockWidget(logWidget, this);
     m_logDockWidget->setObjectName("logDockWidget");
     addDockWidget(Qt::RightDockWidgetArea, m_logDockWidget);
 
@@ -96,16 +98,30 @@ void MainWindow::loadSettings()
 {
     tc::Settings settings;
     qDebug() << "loading settings from:" << settings.fileName();
+    settings.beginGroup(MainWindowGroup);
+
     restoreGeometry(settings.value(MainWindowGeometryKey).toByteArray());
     restoreState(settings.value(MainWindowStateKey).toByteArray());
+
+    for(auto p: m_persistents)
+        p->loadSettings(settings);
+
+    settings.endGroup();
 }
 
 void MainWindow::saveSettings()
 {
     tc::Settings settings;
     qDebug() << "saving settings to:" << settings.fileName();
+    settings.beginGroup(MainWindowGroup);
+
     settings.setValue(MainWindowGeometryKey, saveGeometry());
     settings.setValue(MainWindowStateKey, saveState());
+
+    for(auto p: m_persistents)
+        p->saveSettings(settings);
+
+    settings.endGroup();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

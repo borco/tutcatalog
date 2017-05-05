@@ -70,6 +70,24 @@ void Settings::setArrayIndex(int i)
     d->m_settings->setArrayIndex(i);
 }
 
+void Settings::beginGroup(const QString &prefix)
+{
+    Q_D(Settings);
+    d->m_settings->beginGroup(prefix);
+}
+
+void Settings::endGroup()
+{
+    Q_D(Settings);
+    d->m_settings->endGroup();
+}
+
+QString Settings::group() const
+{
+    Q_D(const Settings);
+    return d->m_settings->group();
+}
+
 void Settings::sync()
 {
     Q_D(Settings);

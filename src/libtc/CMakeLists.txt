@@ -5,6 +5,8 @@ add_library(libtc SHARED
 
     # code
     libtc_global.h
+
+    tc/persistent.h
     tc/project.cpp
     tc/project.h
     tc/settings.cpp

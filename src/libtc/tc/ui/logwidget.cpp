@@ -2,11 +2,19 @@
 #include "pixmap.h"
 #include "theme.h"
 
+#include "tc/settings.h"
+
 #include <QAction>
 #include <QTextEdit>
 #include <QVBoxLayout>
 
 #include <iostream>
+
+namespace {
+const QString LogWidgetGroup { "LogWidget/" };
+const QString ShowDebugMessagesKey { LogWidgetGroup + "showDebugMessages" };
+const QString WrapLongLinesKey { LogWidgetGroup + "wrapLongLines" };
+}
 
 namespace tc {
 namespace ui {
@@ -24,6 +32,8 @@ private:
     QTextEdit* m_edit { nullptr };
     QList<QAction*> m_dockToolBarActions;
     QList<QAction*> m_appToolBarActions;
+    QAction* m_showDebugMessagesAction { nullptr };
+    QAction* m_wrapLongLinesAction { nullptr };
     bool m_showDebugMessages { true };
 
     static LogWidgetPrivate* m_instance;
@@ -92,6 +102,7 @@ private:
         action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf188", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         action->setChecked(m_showDebugMessages);
         connect(action, &QAction::toggled, [=](bool value) { m_showDebugMessages = value; });
+        m_showDebugMessagesAction = action;
         m_dockToolBarActions.append(action);
 
         bool defaultWrapText = true;
@@ -102,6 +113,7 @@ private:
         action->setChecked(defaultWrapText);
         wrapText(defaultWrapText);
         connect(action, &QAction::toggled, this, &LogWidgetPrivate::wrapText);
+        m_wrapLongLinesAction = action;
         m_dockToolBarActions.append(action);
 
         action = new QAction;
@@ -117,6 +129,16 @@ private:
 
     void wrapText(bool value) {
         m_edit->setWordWrapMode(value ? QTextOption::WordWrap : QTextOption::NoWrap);
+    }
+
+    void saveSettings(Settings &settings) const {
+        settings.setValue(ShowDebugMessagesKey, m_showDebugMessagesAction->isChecked());
+        settings.setValue(WrapLongLinesKey, m_wrapLongLinesAction->isChecked());
+    }
+
+    void loadSettings(const Settings &settings) {
+        m_showDebugMessagesAction->setChecked(settings.value(ShowDebugMessagesKey, true).toBool());
+        m_wrapLongLinesAction->setChecked(settings.value(WrapLongLinesKey, false).toBool());
     }
 };
 
@@ -142,6 +164,18 @@ QList<QAction *> LogWidget::appToolBarActions() const
 {
     Q_D(const LogWidget);
     return d->m_appToolBarActions;
+}
+
+void LogWidget::saveSettings(Settings &settings) const
+{
+    Q_D(const LogWidget);
+    d->saveSettings(settings);
+}
+
+void LogWidget::loadSettings(const Settings &settings)
+{
+    Q_D(LogWidget);
+    d->loadSettings(settings);
 }
 
 } // namespace ui

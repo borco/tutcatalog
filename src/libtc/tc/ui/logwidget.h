@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libtc_global.h"
+#include "tc/persistent.h"
 
 #include "dockablewidget.h"
 
@@ -8,7 +9,7 @@ namespace tc {
 namespace ui {
 
 class LogWidgetPrivate;
-class LIBTCSHARED_EXPORT LogWidget: public DockableWidget
+class LIBTCSHARED_EXPORT LogWidget: public DockableWidget, public Persistent
 {
 public:
     explicit LogWidget(QWidget* parent = nullptr);
@@ -16,6 +17,9 @@ public:
 
     QList<QAction *> dockToolBarActions() const override;
     QList<QAction *> appToolBarActions() const override;
+
+    void saveSettings(Settings &settings) const override;
+    void loadSettings(const Settings &settings) override;
 
 private:
     Q_DECLARE_PRIVATE(LogWidget)

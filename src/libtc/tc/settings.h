@@ -21,6 +21,10 @@ public:
     void endArray();
     void setArrayIndex(int i);
 
+    void beginGroup(const QString &prefix);
+    void endGroup();
+    QString group() const;
+
     void sync();
 
     static void setFileName(const QString& fileName);
