@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "config.h"
 
 #include "tc/project.h"
 #include "tc/settings.h"
@@ -19,6 +20,7 @@
 #include <QCommandLineParser>
 #include <QDateTime>
 #include <QDebug>
+#include <QDir>
 
 namespace {
 const QString MainWindowGroup { "TutCatalog/MainWindow" };
@@ -50,6 +52,8 @@ void MainWindow::setupUi()
     using namespace tc::ui;
 
     m_ui->setupUi(this);
+
+    setWindowTitle(MY_APPLICATION);
 
     // docks
     auto logWidget = new LogWidget(this);
@@ -88,7 +92,12 @@ void MainWindow::processCommandLineOption(const QCommandLineParser &parser)
     }
 
     loadSettings();
-    loadProject(project);
+
+    if (!project.isEmpty()) {
+        loadProject(project);
+    } else {
+        qWarning() << "no project to load";
+    }
 }
 
 void MainWindow::loadProject(const QString &fileName)
@@ -100,6 +109,7 @@ void MainWindow::loadProject(const QString &fileName)
 
     Project p;
     if (p.readFromFile(fileName)) {
+        setWindowTitle(QString("%2 - %1").arg(MY_APPLICATION, QDir::toNativeSeparators(fileName)));
         m_folders->setup(p.folderInfos());
         m_folders->load();
         qDebug() << "loaded" << fileName << "in" << t.elapsed() << "msec";
