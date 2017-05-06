@@ -44,18 +44,16 @@ void MainWindow::setupUi()
 
     m_ui->setupUi(this);
 
-    m_ui->centralwidget->hide();
-
     // docks
     auto logWidget = new LogWidget(this);
     auto logDockWidget = new DockWidget(logWidget, this);
     logDockWidget->setObjectName("logDockWidget");
-    addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
+    addDockWidget(Qt::LeftDockWidgetArea, logDockWidget);
     m_persistents << logWidget;
 
     auto tutorialsWidget = new TutorialsWidget(this);
     auto tutorialsDockWidget = new DockWidget(tutorialsWidget, this);
-    tutorialsDockWidget->setObjectName("tutorials");
+    tutorialsDockWidget->setObjectName("tutorialsDockWidget");
     addDockWidget(Qt::LeftDockWidgetArea, tutorialsDockWidget);
     m_persistents << tutorialsWidget;
 
@@ -64,9 +62,9 @@ void MainWindow::setupUi()
     m_ui->toolBar->setIconSize(QSize(Theme::MainToolBarIconSize,
                                      Theme::MainToolBarIconSize));
 
-    m_ui->toolBar->addActions(m_folders->actions());
+//    m_ui->toolBar->addActions(m_folders->actions());
+//    m_ui->toolBar->addSeparator();
 
-    m_ui->toolBar->addSeparator();
     m_ui->toolBar->addAction(tutorialsDockWidget->toggleViewAction());
     m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
 }
