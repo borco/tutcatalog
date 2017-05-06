@@ -109,7 +109,7 @@ private:
         action = new QAction;
         action->setToolTip(tr("Wrap long lines"));
         action->setCheckable(true);
-        action->setIcon(Pixmap::fromFont(Theme::DefaultFont, "\u2BA8", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE25B", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         action->setChecked(defaultWrapText);
         wrapText(defaultWrapText);
         connect(action, &QAction::toggled, this, &LogWidgetPrivate::wrapText);

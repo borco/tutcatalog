@@ -17,10 +17,6 @@ namespace folders {
 class FolderSequence;
 }
 
-namespace ui {
-class DockWidget;
-class LogWidget;
-}
 }
 
 class MainWindow : public QMainWindow
@@ -41,7 +37,5 @@ private:
 
     Ui::MainWindow *m_ui { nullptr };
     tc::folders::FolderSequence* m_folders { nullptr };
-    tc::ui::DockWidget* m_logDockWidget { nullptr };
-
     QVector<tc::Persistent*> m_persistents;
 };

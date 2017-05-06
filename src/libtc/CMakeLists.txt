@@ -29,6 +29,8 @@ add_library(libtc SHARED
     tc/ui/pixmap.h
     tc/ui/theme.cpp
     tc/ui/theme.h
+    tc/ui/tutorialswidget.cpp
+    tc/ui/tutorialswidget.h
 
     tc/tutorials/tutorial.cpp
     tc/tutorials/tutorial.h

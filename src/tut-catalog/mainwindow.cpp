@@ -11,6 +11,7 @@
 #include "tc/ui/logwidget.h"
 #include "tc/ui/dockwidget.h"
 #include "tc/ui/theme.h"
+#include "tc/ui/tutorialswidget.h"
 
 #include <QCommandLineParser>
 #include <QDateTime>
@@ -47,10 +48,16 @@ void MainWindow::setupUi()
 
     // docks
     auto logWidget = new LogWidget(this);
+    auto logDockWidget = new DockWidget(logWidget, this);
+    logDockWidget->setObjectName("logDockWidget");
+    addDockWidget(Qt::RightDockWidgetArea, logDockWidget);
     m_persistents << logWidget;
-    m_logDockWidget = new DockWidget(logWidget, this);
-    m_logDockWidget->setObjectName("logDockWidget");
-    addDockWidget(Qt::RightDockWidgetArea, m_logDockWidget);
+
+    auto tutorialsWidget = new TutorialsWidget(this);
+    auto tutorialsDockWidget = new DockWidget(tutorialsWidget, this);
+    tutorialsDockWidget->setObjectName("tutorials");
+    addDockWidget(Qt::LeftDockWidgetArea, tutorialsDockWidget);
+    m_persistents << tutorialsWidget;
 
     // toolbar
     m_ui->toolBar->setStyleSheet(Theme::MainToolBarStyle);
@@ -60,7 +67,8 @@ void MainWindow::setupUi()
     m_ui->toolBar->addActions(m_folders->actions());
 
     m_ui->toolBar->addSeparator();
-    m_ui->toolBar->addAction(m_logDockWidget->toggleViewAction());
+    m_ui->toolBar->addAction(tutorialsDockWidget->toggleViewAction());
+    m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
 }
 
 void MainWindow::setupFolders(const QString &fileName)
