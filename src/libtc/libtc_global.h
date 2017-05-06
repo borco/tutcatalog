@@ -7,3 +7,5 @@
 #else
 #  define LIBTCSHARED_EXPORT Q_DECL_IMPORT
 #endif
+
+void LIBTCSHARED_EXPORT libtc_init();

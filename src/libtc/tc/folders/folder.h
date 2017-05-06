@@ -1,9 +1,14 @@
 #pragma once
 
 #include "libtc_global.h"
-#include <QObject>
+#include "QQmlObjectListModel.h"
 
 namespace tc {
+
+namespace tutorials {
+class Tutorial;
+}
+
 namespace folders {
 
 class FolderInfo;
@@ -12,6 +17,8 @@ class FolderPrivate;
 class LIBTCSHARED_EXPORT Folder : public QObject
 {
     Q_OBJECT
+
+    QML_OBJMODEL_PROPERTY(tc::tutorials::Tutorial, tutorials)
 
 public:
     explicit Folder(QObject *parent = nullptr);

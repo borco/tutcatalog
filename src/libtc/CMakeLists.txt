@@ -4,6 +4,7 @@ add_library(libtc SHARED
     config.h
 
     # code
+    libtc_global.cpp
     libtc_global.h
 
     tc/persistent.h
@@ -29,6 +30,9 @@ add_library(libtc SHARED
     tc/ui/theme.cpp
     tc/ui/theme.h
 
+    tc/tutorials/tutorial.cpp
+    tc/tutorials/tutorial.h
+
     # resources
     resources/libtc.qrc
     resources/README.md
@@ -41,16 +45,17 @@ target_compile_definitions(libtc PRIVATE -DLIBTC_LIBRARY)
 target_include_directories(libtc PUBLIC .)
 
 target_link_libraries(libtc
-    libqtsupermacros
-    libqtqmlmodels
     libmarkdown
+    libqtqmlmodels
+    libqtsupermacros
     CONAN_PKG::QScintilla2
     CONAN_PKG::yaml-cpp
-    Qt5::Widgets
+    Qt5::Core
+    Qt5::Concurrent
     Qt5::Gui
+    Qt5::Qml
+    Qt5::Sql
     Qt5::Svg
     Qt5::Xml
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Qml
+    Qt5::Widgets
     )

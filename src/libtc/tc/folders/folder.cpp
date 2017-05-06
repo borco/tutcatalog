@@ -1,7 +1,11 @@
 #include "folder.h"
 #include "folderinfo.h"
 
+#include "tc/tutorials/tutorial.h"
+
 #include <QDebug>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 namespace tc {
 namespace folders {
@@ -19,9 +23,40 @@ class FolderPrivate : public QObject
         if (info) {
             m_info = *info;
             qDebug() << "- tutorial folder - setup:" << m_info.name();
+            if (!info->cachePath().isEmpty()) {
+                loadCache(info->cachePath());
+            } else {
+                qDebug() << "  no cache defined - cache loading skipped";
+            }
         } else {
             m_info.clear();
         }
+    }
+
+    void loadCache(const QString& cacheFileName) {
+        Q_Q(Folder);
+
+        auto db = QSqlDatabase::database();
+        db.setDatabaseName(cacheFileName);
+        if (!db.open()) {
+            qWarning() << "can't open cache file:" << cacheFileName;
+            return;
+        }
+
+        q->m_tutorials->clear();
+
+        QSqlQuery query("SELECT title, publisher, authors FROM tutorials");
+        while (query.next()) {
+            auto tutorial = new tutorials::Tutorial(this);
+            tutorial->set_title(query.value(0).toString());
+            tutorial->set_publisher(query.value(1).toString());
+            tutorial->set_authors(query.value(2).toString().split(",", QString::SkipEmptyParts));
+            q->m_tutorials->append(tutorial);
+        }
+
+        qDebug() << "  loaded" << q->m_tutorials->size() << "tutorials from cache";
+
+        db.close();
     }
 
     void load() {
@@ -39,6 +74,7 @@ class FolderPrivate : public QObject
 
 Folder::Folder(QObject *parent)
     : QObject(parent)
+    , m_tutorials(new QQmlObjectListModel<tutorials::Tutorial>(this))
     , d_ptr(new FolderPrivate(this))
 {
 }

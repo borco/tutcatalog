@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "config.h"
 
+#include "libtc_global.h"
+
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QSettings>
@@ -12,6 +14,8 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationDomain(MY_DOMAIN);
     QApplication::setApplicationVersion(MY_VERSION);
     QApplication::setApplicationName(MY_APPLICATION);
+
+    libtc_init();
 
     QCommandLineParser parser;
     parser.setApplicationDescription("---\nA database for your local, remote and on-line tutorials.");
