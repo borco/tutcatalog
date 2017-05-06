@@ -214,7 +214,14 @@ git remote add -f markdown https://github.com/borco/Anomade.git
 git subtree add --prefix src/3rd-party/markdown markdown master --squash
 ```
 
-## Screenshots from the old app
+## Screenshots
+
+### Current reimplementation
+
+![main window](docs/tutcatalog-v3.png?raw=true "TutCatalog (v3) - Work in progress")
+
+
+### From the old app
 
 ![main window](docs/tutcatalog-view-mode.png?raw=true "Main Window - View Mode")
 
