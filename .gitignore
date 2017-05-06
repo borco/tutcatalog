@@ -3,3 +3,4 @@
 *.qmake.conf
 CMakeLists.txt.user
 .vscode
+*.sqlite
