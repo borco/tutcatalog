@@ -13,8 +13,8 @@ add_library(libtc SHARED
     tc/settings.cpp
     tc/settings.h
 
-    tc/folders/foldersequence.cpp
-    tc/folders/foldersequence.h
+    tc/folders/collection.cpp
+    tc/folders/collection.h
     tc/folders/folder.cpp
     tc/folders/folder.h
     tc/folders/folderinfo.cpp

@@ -1,4 +1,4 @@
-#include "foldersequence.h"
+#include "collection.h"
 #include "folder.h"
 #include "folderinfo.h"
 
@@ -13,16 +13,16 @@
 namespace tc {
 namespace folders {
 
-class FolderSequencePrivate : public QObject
+class CollectionPrivate : public QObject
 {
-    Q_DECLARE_PUBLIC(FolderSequence)
-    FolderSequence* const q_ptr { nullptr };
+    Q_DECLARE_PUBLIC(Collection)
+    Collection* const q_ptr { nullptr };
     QVector<Folder*> m_folders;
     QList<QAction*> m_actions;
     QAction* m_loadAction { nullptr };
     bool m_isLoading;
 
-    FolderSequencePrivate(FolderSequence* ptr) : q_ptr(ptr) {
+    CollectionPrivate(Collection* ptr) : q_ptr(ptr) {
         setupActions();
     }
 
@@ -38,20 +38,20 @@ class FolderSequencePrivate : public QObject
         action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5D5", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
         action->setToolTip(tr("Sync tutorial folders"));
         action->setCheckable(true);
-        connect(action, &QAction::toggled, this, &FolderSequencePrivate::onLoadActionToggled);
+        connect(action, &QAction::toggled, this, &CollectionPrivate::onLoadActionToggled);
         m_loadAction = action;
         m_actions.append(m_loadAction);
     }
 
     void setup(const QVector<FolderInfo*>& infos) {
-        Q_Q(FolderSequence);
+        Q_Q(Collection);
 
         clear();
 
         for(auto info: infos) {
             auto item = new Folder(this);
             m_folders.append(item);
-            connect(item, &Folder::loaded, q, &FolderSequence::loaded);
+            connect(item, &Folder::loaded, q, &Collection::loaded);
             item->setup(info);
         }
     }
@@ -95,31 +95,31 @@ class FolderSequencePrivate : public QObject
     }
 };
 
-FolderSequence::FolderSequence(QObject *parent)
+Collection::Collection(QObject *parent)
     : QObject(parent)
-    , d_ptr(new FolderSequencePrivate(this))
+    , d_ptr(new CollectionPrivate(this))
 {
 }
 
-FolderSequence::~FolderSequence()
+Collection::~Collection()
 {
 }
 
-void FolderSequence::setup(const QVector<FolderInfo *> &infos)
+void Collection::setup(const QVector<FolderInfo *> &infos)
 {
-    Q_D(FolderSequence);
+    Q_D(Collection);
     d->setup(infos);
 }
 
-void FolderSequence::load()
+void Collection::load()
 {
-    Q_D(FolderSequence);
+    Q_D(Collection);
     d->load();
 }
 
-QList<QAction *> FolderSequence::actions() const
+QList<QAction *> Collection::actions() const
 {
-    Q_D(const FolderSequence);
+    Q_D(const Collection);
     return d->m_actions;
 }
 

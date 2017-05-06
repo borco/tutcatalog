@@ -16,14 +16,14 @@ namespace folders {
 class Folder;
 class FolderInfo;
 
-class FolderSequencePrivate;
-class LIBTCSHARED_EXPORT FolderSequence : public QObject
+class CollectionPrivate;
+class LIBTCSHARED_EXPORT Collection : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit FolderSequence(QObject *parent = nullptr);
-    ~FolderSequence();
+    explicit Collection(QObject *parent = nullptr);
+    ~Collection();
 
     void setup(const QVector<FolderInfo*>& infos);
     void load();
@@ -34,8 +34,8 @@ signals:
     void loaded(tutorials::Tutorial* tutorial);
 
 private:
-    Q_DECLARE_PRIVATE(FolderSequence)
-    QScopedPointer<FolderSequencePrivate> const d_ptr;
+    Q_DECLARE_PRIVATE(Collection)
+    QScopedPointer<CollectionPrivate> const d_ptr;
 };
 
 } // namespace folders

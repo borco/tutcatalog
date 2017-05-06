@@ -4,7 +4,7 @@
 #include "tc/project.h"
 #include "tc/settings.h"
 
-#include "tc/folders/foldersequence.h"
+#include "tc/folders/collection.h"
 #include "tc/folders/folder.h"
 #include "tc/folders/folderinfo.h"
 
@@ -30,9 +30,9 @@ MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
     , m_tutorials(new tc::tutorials::Model(this))
-    , m_folders(new tc::folders::FolderSequence(this))
+    , m_folders(new tc::folders::Collection(this))
 {
-    connect(m_folders, &tc::folders::FolderSequence::loaded, m_tutorials, &tc::tutorials::Model::append);
+    connect(m_folders, &tc::folders::Collection::loaded, m_tutorials, &tc::tutorials::Model::append);
 
     setupUi();
     processCommandLineOption(parser);

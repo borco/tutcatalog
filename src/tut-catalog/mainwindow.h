@@ -13,7 +13,7 @@ namespace tc {
 class Persistent;
 
 namespace folders {
-class FolderSequence;
+class Collection;
 }
 
 namespace tutorials {
@@ -43,5 +43,5 @@ private:
     QVector<tc::Persistent*> m_persistents;
 
     tc::tutorials::Model* m_tutorials { nullptr };
-    tc::folders::FolderSequence* m_folders { nullptr };
+    tc::folders::Collection* m_folders { nullptr };
 };
