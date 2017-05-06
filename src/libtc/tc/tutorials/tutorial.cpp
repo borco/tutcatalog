@@ -5,6 +5,8 @@ namespace tutorials {
 
 Tutorial::Tutorial(QObject *parent)
     : QObject(parent)
+    , m_isCached(true)
+    , m_isReadOnly(false)
 {
 }
 

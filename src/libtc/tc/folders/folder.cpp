@@ -24,7 +24,7 @@ class FolderPrivate : public QObject
             m_info = *info;
             qDebug() << "- tutorial folder - setup:" << m_info.name();
             if (!info->cachePath().isEmpty()) {
-                loadCache(info->cachePath());
+                loadCache(info);
             } else {
                 qDebug() << "  no cache defined - cache loading skipped";
             }
@@ -33,28 +33,38 @@ class FolderPrivate : public QObject
         }
     }
 
-    void loadCache(const QString& cacheFileName) {
+    void loadCache(const FolderInfo* info) {
         Q_Q(Folder);
 
         auto db = QSqlDatabase::database();
-        db.setDatabaseName(cacheFileName);
+        db.setDatabaseName(info->cachePath());
         if (!db.open()) {
-            qWarning() << "can't open cache file:" << cacheFileName;
+            qWarning() << "can't open cache file:" << info->cachePath();
             return;
         }
 
-        q->m_tutorials->clear();
-
         QSqlQuery query("SELECT title, publisher, authors FROM tutorials");
+        int count { 0 };
         while (query.next()) {
-            auto tutorial = new tutorials::Tutorial(this);
+            ++count;
+            auto tutorial = new tutorials::Tutorial;
+            tutorial->set_folder(info->name());
+            tutorial->set_isCached(true);
+            tutorial->set_isReadOnly(true);
+
             tutorial->set_title(query.value(0).toString());
             tutorial->set_publisher(query.value(1).toString());
             tutorial->set_authors(query.value(2).toString().split(",", QString::SkipEmptyParts));
-            q->m_tutorials->append(tutorial);
+
+            emit q->loaded(tutorial);
+
+            if (tutorial->parent() == nullptr) {
+                qWarning() << "deleting unwanted tutorial" << tutorial->title();
+                tutorial->deleteLater();
+            }
         }
 
-        qDebug() << "  loaded" << q->m_tutorials->size() << "tutorials from cache";
+        qDebug() << "  loaded" << count << "tutorials from cache";
 
         db.close();
     }
@@ -74,7 +84,6 @@ class FolderPrivate : public QObject
 
 Folder::Folder(QObject *parent)
     : QObject(parent)
-    , m_tutorials(new QQmlObjectListModel<tutorials::Tutorial>(this))
     , d_ptr(new FolderPrivate(this))
 {
 }

@@ -10,11 +10,15 @@ class MainWindow;
 }
 
 namespace tc {
-
 class Persistent;
 
 namespace folders {
 class FolderSequence;
+}
+
+namespace tutorials {
+class Model;
+class ProxyModel;
 }
 
 }
@@ -29,13 +33,15 @@ public:
 
 private:
     void setupUi();
-    void setupFolders(const QString& fileName);
     void processCommandLineOption(const QCommandLineParser& parser);
+    void loadProject(const QString& fileName);
     void loadSettings();
     void saveSettings();
     void closeEvent(QCloseEvent* event) override;
 
     Ui::MainWindow *m_ui { nullptr };
-    tc::folders::FolderSequence* m_folders { nullptr };
     QVector<tc::Persistent*> m_persistents;
+
+    tc::tutorials::Model* m_tutorials { nullptr };
+    tc::folders::FolderSequence* m_folders { nullptr };
 };

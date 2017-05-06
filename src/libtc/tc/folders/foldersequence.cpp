@@ -5,6 +5,8 @@
 #include "tc/ui/pixmap.h"
 #include "tc/ui/theme.h"
 
+#include "tc/tutorials/tutorial.h"
+
 #include <QAction>
 #include <QDebug>
 
@@ -42,12 +44,15 @@ class FolderSequencePrivate : public QObject
     }
 
     void setup(const QVector<FolderInfo*>& infos) {
+        Q_Q(FolderSequence);
+
         clear();
 
         for(auto info: infos) {
             auto item = new Folder(this);
-            item->setup(info);
             m_folders.append(item);
+            connect(item, &Folder::loaded, q, &FolderSequence::loaded);
+            item->setup(info);
         }
     }
 

@@ -4,6 +4,11 @@
 #include "dockablewidget.h"
 
 namespace tc {
+
+namespace tutorials {
+class Model;
+}
+
 namespace ui {
 
 class TutorialsWidgetPrivate;
@@ -20,6 +25,8 @@ public:
 
     void saveSettings(Settings &settings) const override;
     void loadSettings(const Settings &settings) override;
+
+    void setModel(tutorials::Model* model);
 
 private:
     Q_DECLARE_PRIVATE(TutorialsWidget)

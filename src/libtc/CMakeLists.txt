@@ -34,6 +34,10 @@ add_library(libtc SHARED
 
     tc/tutorials/tutorial.cpp
     tc/tutorials/tutorial.h
+    tc/tutorials/model.cpp
+    tc/tutorials/model.h
+    tc/tutorials/proxymodel.cpp
+    tc/tutorials/proxymodel.h
 
     # resources
     resources/libtc.qrc

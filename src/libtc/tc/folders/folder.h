@@ -1,7 +1,7 @@
 #pragma once
 
 #include "libtc_global.h"
-#include "QQmlObjectListModel.h"
+#include <QObject>
 
 namespace tc {
 
@@ -18,8 +18,6 @@ class LIBTCSHARED_EXPORT Folder : public QObject
 {
     Q_OBJECT
 
-    QML_OBJMODEL_PROPERTY(tc::tutorials::Tutorial, tutorials)
-
 public:
     explicit Folder(QObject *parent = nullptr);
     ~Folder();
@@ -34,12 +32,13 @@ public:
     bool isRefreshing() const;
 
 signals:
-    void refreshed();
+    void loaded(tutorials::Tutorial* tutorial);
+    void refreshed(int total, int progress);
 
 private:
     Q_DECLARE_PRIVATE(Folder)
     QScopedPointer<FolderPrivate> const d_ptr;
 };
 
-} // namespace tf
+} // namespace folders
 } // namespace tc

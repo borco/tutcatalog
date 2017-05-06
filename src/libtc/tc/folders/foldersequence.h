@@ -6,6 +6,11 @@
 class QAction;
 
 namespace tc {
+
+namespace tutorials {
+class Tutorial;
+}
+
 namespace folders {
 
 class Folder;
@@ -24,6 +29,9 @@ public:
     void load();
 
     QList<QAction*> actions() const;
+
+signals:
+    void loaded(tutorials::Tutorial* tutorial);
 
 private:
     Q_DECLARE_PRIVATE(FolderSequence)

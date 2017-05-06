@@ -13,6 +13,9 @@
 #include "tc/ui/theme.h"
 #include "tc/ui/tutorialswidget.h"
 
+#include "tc/tutorials/model.h"
+#include "tc/tutorials/tutorial.h"
+
 #include <QCommandLineParser>
 #include <QDateTime>
 #include <QDebug>
@@ -26,14 +29,18 @@ const QString MainWindowStateKey { "windowState" };
 MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
+    , m_tutorials(new tc::tutorials::Model(this))
     , m_folders(new tc::folders::FolderSequence(this))
 {
+    connect(m_folders, &tc::folders::FolderSequence::loaded, m_tutorials, &tc::tutorials::Model::append);
+
     setupUi();
     processCommandLineOption(parser);
 }
 
 MainWindow::~MainWindow()
 {
+    delete m_tutorials;
     delete m_folders;
     delete m_ui;
 }
@@ -52,6 +59,7 @@ void MainWindow::setupUi()
     m_persistents << logWidget;
 
     auto tutorialsWidget = new TutorialsWidget(this);
+    tutorialsWidget->setModel(m_tutorials);
     auto tutorialsDockWidget = new DockWidget(tutorialsWidget, this);
     tutorialsDockWidget->setObjectName("tutorialsDockWidget");
     addDockWidget(Qt::LeftDockWidgetArea, tutorialsDockWidget);
@@ -69,7 +77,21 @@ void MainWindow::setupUi()
     m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
 }
 
-void MainWindow::setupFolders(const QString &fileName)
+void MainWindow::processCommandLineOption(const QCommandLineParser &parser)
+{
+    const QStringList args = parser.positionalArguments();
+    QString project = args.size() == 1 ? args[0] : QString();
+    QString customIni = parser.value("ini");
+
+    if (!customIni.isEmpty()) {
+        tc::Settings::setFileName(customIni);
+    }
+
+    loadSettings();
+    loadProject(project);
+}
+
+void MainWindow::loadProject(const QString &fileName)
 {
     using namespace tc;
 
@@ -84,20 +106,6 @@ void MainWindow::setupFolders(const QString &fileName)
     } else {
         qDebug() << "loading" << fileName << "failed after" << t.elapsed() << "msec";
     }
-}
-
-void MainWindow::processCommandLineOption(const QCommandLineParser &parser)
-{
-    const QStringList args = parser.positionalArguments();
-    QString project = args.size() == 1 ? args[0] : QString();
-    QString customIni = parser.value("ini");
-
-    if (!customIni.isEmpty()) {
-        tc::Settings::setFileName(customIni);
-    }
-
-    loadSettings();
-    setupFolders(project);
 }
 
 void MainWindow::loadSettings()
