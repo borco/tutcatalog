@@ -43,24 +43,70 @@ class FolderPrivate : public QObject
             return;
         }
 
-        QSqlQuery query("SELECT title, publisher, authors FROM tutorials");
+        QSqlQuery query("SELECT"
+                        " id,"
+                        " title,"
+                        " publisher,"
+                        " authors,"
+                        " has_info,"
+                        " todo,"
+                        " complete,"
+                        " rating,"
+                        " viewed,"
+                        " deleted,"
+                        " online,"
+                        " duration,"
+                        " size,"
+                        " path,"
+                        " levels,"
+                        " created,"
+                        " released,"
+                        " modified,"
+                        " learning_paths,"
+                        " tags,"
+                        " extra_tags"
+                        " FROM tutorials");
         int count { 0 };
+
         while (query.next()) {
             ++count;
-            auto tutorial = new tutorials::Tutorial;
-            tutorial->set_folder(info->name());
-            tutorial->set_isCached(true);
-            tutorial->set_isReadOnly(true);
+            auto t = new tutorials::Tutorial;
+            t->set_cache(info->cachePath());
+            t->set_group(info->name());
+            t->set_isCached(true);
+            t->set_isReadOnly(true);
 
-            tutorial->set_title(query.value(0).toString());
-            tutorial->set_publisher(query.value(1).toString());
-            tutorial->set_authors(query.value(2).toString().split(",", QString::SkipEmptyParts));
+            int row = -1;
+            t->set_tableId(query.value(++row).toInt());
+            t->set_title(query.value(++row).toString());
+            t->set_publisher(query.value(++row).toString());
+            t->set_authors(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_hasInfo(query.value(++row).toBool());
+            t->set_onToDoList(query.value(++row).toBool());
+            t->set_isComplete(query.value(++row).toBool());
+            t->set_rating(query.value(++row).toInt());
+            t->set_isViewed(query.value(++row).toBool());
+            t->set_isDeleted(query.value(++row).toBool());
+            t->set_isOnline(query.value(++row).toBool());
+            t->set_duration(query.value(++row).toString());
+            t->set_size(query.value(++row).toInt());
+            t->set_path(query.value(++row).toString());
+            t->set_levels(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_created(query.value(++row).toDateTime());
+            t->set_released(query.value(++row).toDateTime());
+            t->set_modified(query.value(++row).toDateTime());
+            t->set_learningPaths(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
 
-            emit q->loaded(tutorial);
+            auto skipBackupPath = info->skipBackupPath();
+            t->set_skipBackup(!skipBackupPath.isEmpty() && t->path().startsWith(skipBackupPath));
 
-            if (tutorial->parent() == nullptr) {
-                qWarning() << "deleting unwanted tutorial" << tutorial->title();
-                tutorial->deleteLater();
+            emit q->loaded(t);
+
+            if (t->parent() == nullptr) {
+                qWarning() << "deleting unwanted tutorial" << t->title();
+                t->deleteLater();
             }
         }
 

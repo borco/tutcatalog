@@ -10,6 +10,9 @@ class LIBTCSHARED_EXPORT FolderInfo : public QObject
 {
     Q_OBJECT
 
+    // some index to uniquely identify this folder info
+    QML_WRITABLE_VAR_PROPERTY(int, index)
+
     // the path for this tutorial folder
     QML_WRITABLE_VAR_PROPERTY(QString, path)
 

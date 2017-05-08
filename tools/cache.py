@@ -197,7 +197,7 @@ def create_database(args):
 
 if __name__ == "__main__":
     default_file = "c:/sources/tutcatalog-dummy-cache.sqlite" # tutcatalog cache
-    default_count = 1000
+    default_count = 100
     default_title = "Title"
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--count", help="number of tutorials to generate (default: {})".format(default_count), type=int, default=default_count, metavar="N")

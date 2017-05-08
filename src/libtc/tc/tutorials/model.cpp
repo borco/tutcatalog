@@ -9,7 +9,21 @@ struct Header {
     enum Id {
         Title,
         Publisher,
-        Authors
+        Authors,
+        Info,
+        ToDo,
+        Complete,
+        Rating,
+        Viewed,
+        Deleted,
+        Online,
+        Duration,
+        Size,
+        Levels,
+        Created,
+        Modified,
+        Released,
+        SkipBackup,
     };
 
     Id id;
@@ -26,7 +40,21 @@ struct ModelPrivate : public QObject
     const QVector<Header> Headers {
         { Header::Title, tr("Title") },
         { Header::Publisher, tr("Publisher") },
-        { Header::Authors, tr("Authors") }
+        { Header::Authors, tr("Authors") },
+        { Header::Info, tr("Info") },
+        { Header::ToDo, tr("ToDo") },
+        { Header::Complete, tr("Complete") },
+        { Header::Rating, tr("Rating") },
+        { Header::Viewed, tr("Viewed") },
+        { Header::Deleted, tr("Deleted") },
+        { Header::Online, tr("Online") },
+        { Header::Duration, tr("Duration") },
+        { Header::Size, tr("Size") },
+        { Header::Levels, tr("Levels") },
+        { Header::Created, tr("Created") },
+        { Header::Modified, tr("Modified") },
+        { Header::Released, tr("Released") },
+        { Header::SkipBackup, tr("No Backup") },
     };
 
     QVector<Tutorial*> items;
@@ -112,14 +140,24 @@ QVariant Model::data(const QModelIndex &index, int role) const
     switch(role) {
     case Qt::DisplayRole: {
         switch (index.column()) {
-        case Header::Title:
-            return item->title();
-        case Header::Authors:
-            return item->authors().join(", ");
-        case Header::Publisher:
-            return item->publisher();
-        default:
-            return QVariant();
+        case Header::Title: return item->title();
+        case Header::Authors: return item->authors().join(", ");
+        case Header::Publisher: return item->publisher();
+        case Header::Info: return item->hasInfo() ? "Y" : "";
+        case Header::ToDo: return item->onToDoList() ? "Y" : "";
+        case Header::Complete: return item->isComplete() ? "" : "N";
+        case Header::Rating: return item->rating();
+        case Header::Viewed: return item->isViewed() ? "Y" : "";
+        case Header::Deleted: return item->isDeleted() ? "Y" : "";
+        case Header::Online: return item->isOnline() ? "Y" : "";
+        case Header::Duration: return item->duration();
+        case Header::Size: return item->size();
+        case Header::Levels: return item->levels();
+        case Header::Created: return item->created();
+        case Header::Modified: return item->modified();
+        case Header::Released: return item->released();
+        case Header::SkipBackup: return item->skipBackup() ? "Y" : "";
+        default: return QVariant();
         }
     }
 
