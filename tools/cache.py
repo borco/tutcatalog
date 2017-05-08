@@ -59,10 +59,75 @@ blobs = [
     TutorialBlob(text1, [image1]),
     TutorialBlob(text2),
     TutorialBlob(text3, [image1, image2])
-    ]
+]
 
 parent_paths = [ "c:\_TUTORIALS\FOO", "c:\_TUTORIALS\BAR", "c:\_TUTORIALS_ONLINE\FOO" ]
-levels = ["beginner", "intermediate", "avanced", "any", "beginner, intermediate", "intermediate, advanced"]
+levels = [
+    "beginner",
+    "intermediate",
+    "avanced",
+    "any",
+    "beginner, intermediate",
+    "intermediate, advanced",
+    None,
+    None,
+    None,
+    None,
+    None,
+]
+
+learning_paths = [
+    "path1",
+    "path2",
+    "path1, path2",
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+]
+
+tags = [
+    "tag1",
+    "tag2",
+    "tag3",
+    "tag4",
+    "tag5",
+    "tag1, tag2",
+    "tag1, tag2, tag3",
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+]
+
+extra_tags = [
+    "etag1",
+    "etag2",
+    "etag3",
+    "etag4",
+    "etag5",
+    "etag1, etag2",
+    "etag1, etag2, etag3",
+    None,
+    None,
+    None,
+    None,
+]
 
 def create_database(args):
     print("generating {} tutorials in {}, using tutorial name prefix {}".format(args.count, args.file, args.title))
@@ -70,7 +135,7 @@ def create_database(args):
     conn = sqlite3.connect(args.file)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
-    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, todo BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, skip_archive BOOLEAN, online BOOLEAN, duration TEXT, size INTEGER, parent_path TEXT, path TEXT, level TEXT, created DATE, released DATE, modified DATE, info BLOB)")
+    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, todo BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, skip_archive BOOLEAN, online BOOLEAN, duration TEXT, size INTEGER, parent_path TEXT, path TEXT, level TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
     for i in range(args.count):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, mode="w") as zf:
@@ -94,13 +159,16 @@ def create_database(args):
         duration = i + 10
         size = i * 100
         parent_path = parent_paths[i % len(parent_paths)]
-        path = title if i % 10 != 1 else title + "xxx"
+        path = title if i % 10 != 1 else title + "__"
         level = levels[i % len(levels)]
         created = datetime.datetime.now()
         released = datetime.datetime.now()
         modified = datetime.datetime.now()
+        lps = learning_paths[i % len(learning_paths)]
+        ts = tags[i % len(tags)]
+        ets = extra_tags[i % len(extra_tags)]
 
-        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, info, todo, complete, rating, viewed, deleted, skip_archive, online, duration, size, parent_path, path, level, created, released, modified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, info, todo, complete, rating, viewed, deleted, skip_archive, online, duration, size, parent_path, path, level, created, released, modified, learning_paths, tags, extra_tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 title,
                 publisher,
@@ -121,7 +189,10 @@ def create_database(args):
                 level,
                 created,
                 released,
-                modified
+                modified,
+                lps,
+                ts,
+                ets,
                 ]
                 )
     conn.commit()
