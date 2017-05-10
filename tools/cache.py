@@ -61,7 +61,16 @@ blobs = [
     TutorialBlob(text3, [image1, image2])
 ]
 
-parent_paths = [ "c:\_TUTORIALS\FOO", "c:\_TUTORIALS\BAR", "c:\_TUTORIALS_ONLINE\FOO" ]
+parent_paths = [
+    "c:\\_TUTORIALS\\FOO",
+    "c:\\_TUTORIALS\\BAR",
+]
+
+skip_paths = [
+    "c:\\_TUTORIALS_SKIP\\FOO",
+    "c:\\_TUTORIALS_SKIP\\BAR",
+]
+
 levels = [
     "beginner",
     "intermediate",
@@ -135,7 +144,7 @@ def create_database(args):
     conn = sqlite3.connect(args.file)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
-    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, todo BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
+    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
     for i in range(args.count):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, mode="w") as zf:
@@ -143,38 +152,42 @@ def create_database(args):
             zf.writestr("info.tc", blob.info)
             for img in blob.images:
                 zf.write(img)
-        title = "{} {}".format(args.title, i + 1)
-        publisher = "Publisher {}".format(i % 3 + 1)
-        authors = "Author {}".format(i + 1) if i % 5 == 0 else "Author {}, Author {}".format(i % 5, i % 5 + 1)
+        title = "{} {}".format(args.title, i)
+        publisher = "Publisher {}".format(i % 3)
+        authors = "Author {}".format(i) if i % 5 == 0 else "Author {}, Author {}".format(i % 5, i % 5 + 1)
         
         has_info = i % 10 != 9
-        info = buffer.getbuffer()
+        has_checksum = i % 3 == 0
         todo = i % 15 == 0
-        complete = i % 20 == 0
+        keep = i % 4 == 0
+        complete = i % 20 != 0
         rating = i % 10 - 5
-        viewed = i % 4 == 1
-        deleted = i % 6 == 1
-        online = i % 7 == 1
+        viewed = i % 4 == 0
+        deleted = i % 6 == 0
+        online = i % 7 == 0
         duration = i + 10
-        size = i * 100
+        size = i * 1000
         parent_path = parent_paths[i % len(parent_paths)]
-        path = parent_path + "/" + (title if i % 10 != 1 else title + "__")
+        skip_path = skip_paths[i % len(skip_paths)]
+        path = (skip_path if i % 5 == 0 else parent_path) + "/" + (title if i % 10 != 9 else title + "__")
         level = levels[i % len(levels)]
-        created = datetime.datetime.now()
-        released = datetime.datetime.now()
-        modified = datetime.datetime.now()
+        created = datetime.datetime.now() - datetime.timedelta(minutes = i)
+        released = datetime.datetime.now() - datetime.timedelta(hours = i)
+        modified = datetime.datetime.now() + datetime.timedelta(minutes = i)
         lps = learning_paths[i % len(learning_paths)]
         ts = tags[i % len(tags)]
         ets = extra_tags[i % len(extra_tags)]
+        info = buffer.getbuffer()
 
-        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, info, todo, complete, rating, viewed, deleted, online, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, has_checksum, todo, keep, complete, rating, viewed, deleted, online, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags, info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 title,
                 publisher,
                 authors,
                 has_info,
-                sqlite3.Binary(info) if has_info else None,
+                has_checksum,
                 todo,
+                keep,
                 complete,
                 rating,
                 viewed,
@@ -190,6 +203,7 @@ def create_database(args):
                 lps,
                 ts,
                 ets,
+                sqlite3.Binary(info) if has_info else None,
                 ]
                 )
     conn.commit()

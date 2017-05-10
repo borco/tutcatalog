@@ -18,6 +18,7 @@ Tutorial::Tutorial(QObject *parent)
     , m_hasInfo(false)
     , m_hasChecksum(false)
     , m_onToDoList(false)
+    , m_onKeepList(false)
     , m_isComplete(false)
     , m_isViewed(false)
     , m_isDeleted(false)
@@ -55,7 +56,7 @@ QString Tutorial::ratingAsString(int rating)
 {
     rating = qBound(MinRating, rating, MaxRating);
     rating -= DefaultRating;
-    return QString(rating >= 0 ? "\u2605" : "\u2606").repeated(qAbs(rating));
+    return QString(rating >= 0 ? "★" : "☆").repeated(qAbs(rating));
 }
 
 QString Tutorial::durationAsString(int duration)

@@ -32,6 +32,7 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(bool, hasInfo)        // true: the info.tc exists
     QML_WRITABLE_VAR_PROPERTY(bool, hasChecksum)    // true: the info.sfv exists
     QML_WRITABLE_VAR_PROPERTY(bool, onToDoList)     // true: it is on your ToDo list
+    QML_WRITABLE_VAR_PROPERTY(bool, onKeepList)     // true: it is on your Keep list (should not be able to delete the tutorial from the app)
     QML_WRITABLE_VAR_PROPERTY(bool, isComplete)     // true: you have all modules of this tutorial
     QML_WRITABLE_VAR_PROPERTY(bool, isViewed)       // true: you have viewed this tutorial
     QML_WRITABLE_VAR_PROPERTY(bool, isDeleted)      // true: you've had this tutorial, but deleted its files (except info*, image* and cover*)

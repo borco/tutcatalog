@@ -4,6 +4,7 @@
 #include "tc/tutorials/tutorial.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
@@ -49,7 +50,9 @@ class FolderPrivate : public QObject
                         " publisher,"
                         " authors,"
                         " has_info,"
+                        " has_checksum,"
                         " todo,"
+                        " keep,"
                         " complete,"
                         " rating,"
                         " viewed,"
@@ -82,7 +85,9 @@ class FolderPrivate : public QObject
             t->set_publisher(query.value(++row).toString());
             t->set_authors(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_hasInfo(query.value(++row).toBool());
+            t->set_hasChecksum(query.value(++row).toBool());
             t->set_onToDoList(query.value(++row).toBool());
+            t->set_onKeepList(query.value(++row).toBool());
             t->set_isComplete(query.value(++row).toBool());
             t->set_rating(query.value(++row).toInt());
             t->set_isViewed(query.value(++row).toBool());
@@ -99,8 +104,12 @@ class FolderPrivate : public QObject
             t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
 
-            auto skipBackupPath = info->skipBackupPath();
-            t->set_skipBackup(!skipBackupPath.isEmpty() && t->path().startsWith(skipBackupPath));
+            auto skipBackupPath = QDir(info->skipBackupPath()).absolutePath();
+            auto currentPath = QDir(t->path()).absolutePath();
+            t->set_skipBackup(!skipBackupPath.isEmpty() && currentPath.startsWith(skipBackupPath));
+            if (t->skipBackup()) {
+                qDebug() << t->title() << "will skip backup:" << t->path();
+            }
 
             emit q->loaded(t);
 

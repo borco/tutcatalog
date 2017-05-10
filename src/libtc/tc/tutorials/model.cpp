@@ -1,7 +1,9 @@
 #include "model.h"
 #include "tutorial.h"
+#include "tc/ui/theme.h"
 
 #include <QDebug>
+#include <QFont>
 
 namespace tc {
 namespace tutorials {
@@ -15,6 +17,7 @@ struct ModelPrivate : public QObject
         tr("Info"),
         tr("Checksum"),
         tr("ToDo"),
+        tr("Keep"),
         tr("Complete"),
         tr("Rating"),
         tr("Viewed"),
@@ -31,6 +34,7 @@ struct ModelPrivate : public QObject
     };
 
     QVector<Tutorial*> items;
+    QFont m_awesomeFont { ui::Theme::AwesomeFont };
 };
 
 Model::Model(QObject* parent)
@@ -117,29 +121,48 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::Title: return item->title();
         case Model::Authors: return item->authors().join(", ");
         case Model::Publisher: return item->publisher();
-        case Model::HasInfo: return item->hasInfo() ? "Y" : "";
-        case Model::HasChecksum: return item->hasChecksum() ? "Y" : "";
-        case Model::OnToDoList: return item->onToDoList() ? "Y" : "";
-        case Model::IsComplete: return item->isComplete() ? "" : "N";
+        case Model::HasInfo: return item->hasInfo() ? "\uf27b" : "";
+        case Model::HasChecksum: return item->hasChecksum() ? "\uf132" : "";
+        case Model::OnToDoList: return item->onToDoList() ? "\uf073" : "";
+        case Model::OnKeepList: return item->onKeepList() ? "\uf02e" : "";
+        case Model::IsComplete: return item->isComplete() ? "" : "\uf042";
         case Model::Rating: return item->rating();
-        case Model::Viewed: return item->isViewed() ? "Y" : "";
-        case Model::Deleted: return item->isDeleted() ? "Y" : "";
-        case Model::Online: return item->isOnline() ? "Y" : "";
+        case Model::IsViewed: return item->isViewed() ? "\uf06e" : "";
+        case Model::IsDeleted: return item->isDeleted() ? "\uf1f8" : "";
+        case Model::IsOnline: return item->isOnline() ? "\uf0e8" : "";
         case Model::Duration: return item->duration();
         case Model::Size: return item->size();
         case Model::Levels: return item->levels();
         case Model::Created: return item->created();
         case Model::Modified: return item->modified();
         case Model::Released: return item->released();
-        case Model::SkipBackup: return item->skipBackup() ? "Y" : "";
+        case Model::SkipBackup: return item->skipBackup() ? "\uf071" : "";
         case Model::FileSizeToDuration: return Tutorial::fileSizeToDurationAsString(item->size(), item->duration());
-        default: return QVariant();
+        default: break;
         }
     }
 
+    case Qt::FontRole:
+        switch (column) {
+        case Model::HasInfo:
+        case Model::HasChecksum:
+        case Model::OnToDoList:
+        case Model::OnKeepList:
+        case Model::IsComplete:
+        case Model::IsOnline:
+        case Model::IsViewed:
+        case Model::IsDeleted:
+        case Model::SkipBackup:
+            return d->m_awesomeFont;
+        default:
+            break;
+        }
+
     default:
-        return QVariant();
+        break;
     }
+
+    return QVariant();
 }
 
 }
