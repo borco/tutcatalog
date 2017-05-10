@@ -2,12 +2,21 @@
 #include "pixmap.h"
 #include "theme.h"
 
+#include "tc/settings.h"
+
 #include "tc/tutorials/model.h"
 #include "tc/tutorials/proxymodel.h"
 #include "tc/tutorials/tutorial.h"
 
+#include <QHeaderView>
 #include <QTreeView>
 #include <QVBoxLayout>
+
+
+namespace {
+const QString WidgetGroup { "TutorialsWidget/" };
+const QString HeaderStateKey { WidgetGroup + "headerState" };
+}
 
 namespace tc {
 namespace ui {
@@ -19,6 +28,8 @@ class TutorialsWidgetPrivate : public QObject
 
     QList<QAction*> m_dockToolBarAction;
     QList<QAction*> m_appToolBarAction;
+
+    QTreeView* m_view;
 
     tutorials::Model* m_model { nullptr };
     tutorials::ProxyModel* m_proxyModel { nullptr };
@@ -32,17 +43,17 @@ class TutorialsWidgetPrivate : public QObject
     void setupUi() {
         Q_Q(TutorialsWidget);
 
-        auto view = new QTreeView;
-        view->setFrameStyle(QFrame::NoFrame);
-        view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        view->setModel(m_proxyModel);
-        view->setSelectionBehavior(QAbstractItemView::SelectRows);
-        view->setSortingEnabled(true);
+        m_view = new QTreeView;
+        m_view->setFrameStyle(QFrame::NoFrame);
+        m_view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        m_view->setModel(m_proxyModel);
+        m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
+        m_view->setSortingEnabled(true);
 
         auto layout = new QVBoxLayout;
         layout->setMargin(0);
         layout->setSpacing(0);
-        layout->addWidget(view);
+        layout->addWidget(m_view);
 
         q->setLayout(layout);
 
@@ -56,6 +67,14 @@ class TutorialsWidgetPrivate : public QObject
 
         m_model = model;
         m_proxyModel->setSourceModel(m_model);
+    }
+
+    void saveSettings(Settings &settings) const {
+        settings.setValue(HeaderStateKey, m_view->header()->saveState());
+    }
+
+    void loadSettings(const Settings &settings) {
+        m_view->header()->restoreState(settings.value(HeaderStateKey).toByteArray());
     }
 };
 
@@ -83,10 +102,14 @@ QList<QAction *> TutorialsWidget::appToolBarActions() const
 
 void TutorialsWidget::saveSettings(Settings &settings) const
 {
+    Q_D(const TutorialsWidget);
+    d->saveSettings(settings);
 }
 
 void TutorialsWidget::loadSettings(const Settings &settings)
 {
+    Q_D(TutorialsWidget);
+    d->loadSettings(settings);
 }
 
 void TutorialsWidget::setModel(tutorials::Model *model)
