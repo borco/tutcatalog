@@ -6,20 +6,6 @@
 namespace tc {
 namespace ui {
 
-class BoolDelegate : public QStyledItemDelegate
-{
-public:
-    explicit BoolDelegate(const QString& svgTrue, const QString& svgFalse, QObject* parent = 0);
-    QString displayText(const QVariant &value, const QLocale &locale) const;
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-private:
-    void paint(QPainter *painter, const QRect &rect, const QPalette &palette, QSvgRenderer& svg) const;
-
-    mutable QSvgRenderer m_svgTrue;
-    mutable QSvgRenderer m_svgFalse;
-};
-
 class FileSizeDelegate : public QStyledItemDelegate
 {
 public:
