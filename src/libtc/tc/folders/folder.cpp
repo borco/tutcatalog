@@ -80,8 +80,6 @@ class FolderPrivate : public QObject
             ++count;
             auto t = new tutorials::Tutorial;
             t->set_folder(q);
-            t->set_cache(m_info.cachePath());
-            t->set_group(m_info.name());
             t->set_isCached(true);
             t->set_isReadOnly(true);
 

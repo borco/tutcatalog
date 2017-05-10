@@ -17,14 +17,12 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
 {
     Q_OBJECT
 
-    QML_WRITABLE_VAR_PROPERTY(tc::folders::Folder*, folder)      // folder that owns this tutorial
-    QML_WRITABLE_VAR_PROPERTY(QString, cache)       // an path to the cache file
+    QML_WRITABLE_VAR_PROPERTY(tc::folders::Folder*, folder) // folder that owns this tutorial
     QML_WRITABLE_VAR_PROPERTY(int, tableId)         // an ID to identify the tutorial in the cache (it's id/rowid value)
 
     QML_WRITABLE_VAR_PROPERTY(bool, isCached)
     QML_WRITABLE_VAR_PROPERTY(bool, isReadOnly)
 
-    QML_WRITABLE_VAR_PROPERTY(QString, group)       // this is the name of the tutorial path as defined in the project file
     QML_WRITABLE_VAR_PROPERTY(QString, path)        // the full disk path
     QML_WRITABLE_VAR_PROPERTY(QString, title)
     QML_WRITABLE_VAR_PROPERTY(QString, publisher)
