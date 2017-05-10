@@ -88,7 +88,7 @@ class FolderPrivate : public QObject
             t->set_isViewed(query.value(++row).toBool());
             t->set_isDeleted(query.value(++row).toBool());
             t->set_isOnline(query.value(++row).toBool());
-            t->set_duration(query.value(++row).toString());
+            t->set_duration(query.value(++row).toInt());
             t->set_size(query.value(++row).toInt());
             t->set_path(query.value(++row).toString());
             t->set_levels(query.value(++row).toString().split(",", QString::SkipEmptyParts));

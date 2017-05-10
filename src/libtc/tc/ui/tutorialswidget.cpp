@@ -1,4 +1,5 @@
 #include "tutorialswidget.h"
+#include "delegates.h"
 #include "pixmap.h"
 #include "theme.h"
 
@@ -49,6 +50,17 @@ class TutorialsWidgetPrivate : public QObject
         m_view->setModel(m_proxyModel);
         m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
         m_view->setSortingEnabled(true);
+
+        m_view->setItemDelegateForColumn(tutorials::Model::HasInfo, new BoolDelegate(":/images/black/has-info.svg", "", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::HasChecksum, new BoolDelegate(":/images/black/checksum.svg", "", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::OnToDoList, new BoolDelegate(":/images/black/todo.svg", "", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::IsComplete, new BoolDelegate(":/images/black/complete.svg", ":/images/black/incomplete.svg", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::Rating, new RatingDelegate(this));
+        m_view->setItemDelegateForColumn(tutorials::Model::Viewed, new BoolDelegate(":/images/black/viewed.svg", "", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::Deleted, new BoolDelegate(":/images/black/trash.svg", "", this));
+        m_view->setItemDelegateForColumn(tutorials::Model::Size, new FileSizeDelegate(this));
+        m_view->setItemDelegateForColumn(tutorials::Model::Duration, new DurationDelegate(this));
+        m_view->setItemDelegateForColumn(tutorials::Model::FileSizeToDuration, new FileSizeDelegate(this));
 
         auto layout = new QVBoxLayout;
         layout->setMargin(0);

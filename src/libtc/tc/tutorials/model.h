@@ -15,6 +15,28 @@ class LIBTCSHARED_EXPORT Model : public QAbstractListModel
     Q_OBJECT
 
 public:
+    enum HeaderId {
+        Title = 0,
+        Publisher,
+        Authors,
+        HasInfo,
+        HasChecksum,
+        OnToDoList,
+        IsComplete,
+        Rating,
+        Viewed,
+        Deleted,
+        Online,
+        Duration,
+        Size,
+        Levels,
+        Created,
+        Modified,
+        Released,
+        SkipBackup,
+        FileSizeToDuration,
+    };
+
     explicit Model(QObject* parent = 0);
     ~Model();
 

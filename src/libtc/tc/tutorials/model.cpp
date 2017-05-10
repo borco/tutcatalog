@@ -3,58 +3,31 @@
 
 #include <QDebug>
 
-namespace {
-
-struct Header {
-    enum Id {
-        Title,
-        Publisher,
-        Authors,
-        Info,
-        ToDo,
-        Complete,
-        Rating,
-        Viewed,
-        Deleted,
-        Online,
-        Duration,
-        Size,
-        Levels,
-        Created,
-        Modified,
-        Released,
-        SkipBackup,
-    };
-
-    Id id;
-    QString title;
-};
-
-}
-
 namespace tc {
 namespace tutorials {
 
 struct ModelPrivate : public QObject
 {
-    const QVector<Header> Headers {
-        { Header::Title, tr("Title") },
-        { Header::Publisher, tr("Publisher") },
-        { Header::Authors, tr("Authors") },
-        { Header::Info, tr("Info") },
-        { Header::ToDo, tr("ToDo") },
-        { Header::Complete, tr("Complete") },
-        { Header::Rating, tr("Rating") },
-        { Header::Viewed, tr("Viewed") },
-        { Header::Deleted, tr("Deleted") },
-        { Header::Online, tr("Online") },
-        { Header::Duration, tr("Duration") },
-        { Header::Size, tr("Size") },
-        { Header::Levels, tr("Levels") },
-        { Header::Created, tr("Created") },
-        { Header::Modified, tr("Modified") },
-        { Header::Released, tr("Released") },
-        { Header::SkipBackup, tr("No Backup") },
+    const QVector<QString> Labels {
+        tr("Title"),
+        tr("Publisher"),
+        tr("Authors"),
+        tr("Info"),
+        tr("Checksum"),
+        tr("ToDo"),
+        tr("Complete"),
+        tr("Rating"),
+        tr("Viewed"),
+        tr("Deleted"),
+        tr("Online"),
+        tr("Duration"),
+        tr("Size"),
+        tr("Levels"),
+        tr("Created"),
+        tr("Modified"),
+        tr("Released"),
+        tr("No Backup"),
+        tr("Size / Duration"),
     };
 
     QVector<Tutorial*> items;
@@ -104,7 +77,7 @@ void Model::remove(Tutorial *tutorial)
 int Model::columnCount(const QModelIndex &parent) const
 {
     Q_D(const Model);
-    return parent.isValid() ? 0 : d->Headers.size();
+    return parent.isValid() ? 0 : d->Labels.size();
 }
 
 int Model::rowCount(const QModelIndex &parent) const
@@ -117,7 +90,7 @@ QVariant Model::headerData(int section, Qt::Orientation orientation, int role) c
 {
     Q_D(const Model);
     if (orientation == Qt::Orientation::Horizontal && role == Qt::DisplayRole) {
-        return d->Headers.value(section).title;
+        return d->Labels.value(section);
     }
     return QVariant();
 }
@@ -137,26 +110,29 @@ QVariant Model::data(const QModelIndex &index, int role) const
     if (!item)
         return QVariant();
 
+    int column = index.column();
     switch(role) {
     case Qt::DisplayRole: {
-        switch (index.column()) {
-        case Header::Title: return item->title();
-        case Header::Authors: return item->authors().join(", ");
-        case Header::Publisher: return item->publisher();
-        case Header::Info: return item->hasInfo() ? "Y" : "";
-        case Header::ToDo: return item->onToDoList() ? "Y" : "";
-        case Header::Complete: return item->isComplete() ? "" : "N";
-        case Header::Rating: return item->rating();
-        case Header::Viewed: return item->isViewed() ? "Y" : "";
-        case Header::Deleted: return item->isDeleted() ? "Y" : "";
-        case Header::Online: return item->isOnline() ? "Y" : "";
-        case Header::Duration: return item->duration();
-        case Header::Size: return item->size();
-        case Header::Levels: return item->levels();
-        case Header::Created: return item->created();
-        case Header::Modified: return item->modified();
-        case Header::Released: return item->released();
-        case Header::SkipBackup: return item->skipBackup() ? "Y" : "";
+        switch (column) {
+        case Model::Title: return item->title();
+        case Model::Authors: return item->authors().join(", ");
+        case Model::Publisher: return item->publisher();
+        case Model::HasInfo: return item->hasInfo() ? "Y" : "";
+        case Model::HasChecksum: return item->hasChecksum() ? "Y" : "";
+        case Model::OnToDoList: return item->onToDoList() ? "Y" : "";
+        case Model::IsComplete: return item->isComplete() ? "" : "N";
+        case Model::Rating: return item->rating();
+        case Model::Viewed: return item->isViewed() ? "Y" : "";
+        case Model::Deleted: return item->isDeleted() ? "Y" : "";
+        case Model::Online: return item->isOnline() ? "Y" : "";
+        case Model::Duration: return item->duration();
+        case Model::Size: return item->size();
+        case Model::Levels: return item->levels();
+        case Model::Created: return item->created();
+        case Model::Modified: return item->modified();
+        case Model::Released: return item->released();
+        case Model::SkipBackup: return item->skipBackup() ? "Y" : "";
+        case Model::FileSizeToDuration: return Tutorial::fileSizeToDurationAsString(item->size(), item->duration());
         default: return QVariant();
         }
     }
