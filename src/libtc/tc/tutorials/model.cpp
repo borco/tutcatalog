@@ -130,7 +130,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::IsComplete: return item->isComplete() ? "" : "\uf042";
         case Model::Rating: return item->rating();
         case Model::IsViewed: return item->isViewed() ? "\uf06e" : "";
-        case Model::IsDeleted: return item->isDeleted() ? "\uf1f8" : "";
+        case Model::IsDeleted: return item->isDeleted() ? "\uf014" : "";
         case Model::IsOnline: return item->isOnline() ? "\uf0e8" : "";
         case Model::Duration: return item->duration();
         case Model::Size: return item->size();
@@ -138,8 +138,8 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::Created: return item->created();
         case Model::Modified: return item->modified();
         case Model::Released: return item->released();
-        case Model::SkipBackup: return item->noBackup() ? "\uf071" : "";
-        case Model::FileSizeToDuration: {
+        case Model::NoBackup: return item->noBackup() ? "\uf12a" : "";
+        case Model::SizeToDuration: {
             static const double MegaByte = 1024 * 1024;
             double ratio = item->size() / (item->duration() * MegaByte);
             return ratio > 0.01 ? QString::number(ratio, 'f', 2) : "";
@@ -158,8 +158,35 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::IsOnline:
         case Model::IsViewed:
         case Model::IsDeleted:
-        case Model::SkipBackup:
+        case Model::NoBackup:
             return d->m_awesomeFont;
+        default:
+            break;
+        }
+    }
+
+    case Qt::TextAlignmentRole: {
+        switch (column) {
+
+        case Model::HasInfo:
+        case Model::HasChecksum:
+        case Model::OnToDoList:
+        case Model::OnKeepList:
+        case Model::IsComplete:
+        case Model::IsOnline:
+        case Model::IsViewed:
+        case Model::IsDeleted:
+        case Model::NoBackup:
+            return Qt::AlignHCenter;
+
+        case Model::Size:
+        case Model::Duration:
+        case Model::SizeToDuration:
+        case Model::Created:
+        case Model::Released:
+        case Model::Modified:
+            return Qt::AlignRight;
+
         default:
             break;
         }
@@ -167,8 +194,14 @@ QVariant Model::data(const QModelIndex &index, int role) const
 
     case Qt::ForegroundRole: {
         static const QBrush WarningColor { QColor("#A00") };
-        static const QBrush InfoColor { QColor("#A50") };
+        static const QBrush InfoColor { QColor("#996515") };
         switch(column) {
+        case Model::Title: {
+            if (!item->hasCanonicalName())
+                return WarningColor;
+            break;
+        }
+
         case Model::Size: {
             const qint64 GigaByte = 1024 * 1024 * 1024;
             qint64 size = item->size();
@@ -179,14 +212,14 @@ QVariant Model::data(const QModelIndex &index, int role) const
             break;
         }
 
-        case Model::Title: {
-            if (!item->hasCanonicalName())
-                return WarningColor;
-            break;
-        }
+        case Model::Rating:
+            return item->rating() < 0 ? InfoColor : QVariant();
+
+        case Model::IsComplete:
+            return WarningColor;
 
         case Model::IsDeleted:
-        case Model::SkipBackup:
+        case Model::NoBackup:
             return InfoColor;
 
         default:

@@ -34,8 +34,8 @@ public:
         Created,
         Modified,
         Released,
-        SkipBackup,
-        FileSizeToDuration,
+        NoBackup,
+        SizeToDuration,
     };
 
     explicit Model(QObject* parent = 0);
