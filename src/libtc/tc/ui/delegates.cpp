@@ -59,17 +59,6 @@ QString FileSizeDelegate::displayText(const QVariant &value, const QLocale &) co
     return tutorials::Tutorial::fileSizeAsString(value.value<qint64>());
 }
 
-FileSizeToDurationDelegate::FileSizeToDurationDelegate(QObject *parent)
-    : QStyledItemDelegate(parent)
-{
-}
-
-QString FileSizeToDurationDelegate::displayText(const QVariant &value, const QLocale &) const
-{
-    double v = value.value<double>();
-    return v > 0.01 ? QString::number(v, 'f', 2) : "";
-}
-
 DurationDelegate::DurationDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {

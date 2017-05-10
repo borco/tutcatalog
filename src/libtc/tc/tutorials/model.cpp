@@ -32,7 +32,7 @@ struct ModelPrivate : public QObject
         tr("Modified"),
         tr("Released"),
         tr("No Backup"),
-        tr("Size / Duration"),
+        tr("MB/min"),
     };
 
     QVector<Tutorial*> items;
@@ -139,7 +139,11 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::Modified: return item->modified();
         case Model::Released: return item->released();
         case Model::SkipBackup: return item->noBackup() ? "\uf071" : "";
-        case Model::FileSizeToDuration: return Tutorial::fileSizeToDurationAsString(item->size(), item->duration());
+        case Model::FileSizeToDuration: {
+            static const double MegaByte = 1024 * 1024;
+            double ratio = item->size() / (item->duration() * MegaByte);
+            return ratio > 0.01 ? QString::number(ratio, 'f', 2) : "";
+        }
         default: break;
         }
     }

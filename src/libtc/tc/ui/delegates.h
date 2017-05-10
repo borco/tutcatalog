@@ -27,13 +27,6 @@ public:
     QString displayText(const QVariant &value, const QLocale &) const;
 };
 
-class FileSizeToDurationDelegate : public QStyledItemDelegate
-{
-public:
-    FileSizeToDurationDelegate(QObject* parent = 0);
-    QString displayText(const QVariant &value, const QLocale &) const;
-};
-
 class DurationDelegate : public QStyledItemDelegate
 {
 public:

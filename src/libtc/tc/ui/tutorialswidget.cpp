@@ -54,7 +54,6 @@ class TutorialsWidgetPrivate : public QObject
         m_view->setItemDelegateForColumn(tutorials::Model::Rating, new RatingDelegate(this));
         m_view->setItemDelegateForColumn(tutorials::Model::Size, new FileSizeDelegate(this));
         m_view->setItemDelegateForColumn(tutorials::Model::Duration, new DurationDelegate(this));
-        m_view->setItemDelegateForColumn(tutorials::Model::FileSizeToDuration, new FileSizeDelegate(this));
 
         auto layout = new QVBoxLayout;
         layout->setMargin(0);

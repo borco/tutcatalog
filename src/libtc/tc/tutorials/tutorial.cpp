@@ -1,5 +1,6 @@
 #include "tutorial.h"
 
+#include <QDebug>
 #include <QFileInfo>
 
 namespace {
@@ -67,11 +68,6 @@ QString Tutorial::durationAsString(int duration)
     int mins = duration % 60;
     int hours = duration / 60;
     return QString(tr("%1h %2m").arg(mins, hours));
-}
-
-QString Tutorial::fileSizeToDurationAsString(qint64 size, int duration)
-{
-    return fileSizeAsString(size/duration);
 }
 
 bool Tutorial::hasCanonicalName() const

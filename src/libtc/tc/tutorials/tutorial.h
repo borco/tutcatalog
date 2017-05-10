@@ -61,7 +61,6 @@ public:
     static QString fileSizeAsString(qint64 size);
     static QString ratingAsString(int rating);
     static QString durationAsString(int duration);
-    static QString fileSizeToDurationAsString(qint64 size, int duration);
 
     bool hasCanonicalName() const;
 };
