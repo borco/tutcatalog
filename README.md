@@ -15,8 +15,8 @@ A database for your local, remote and on-line tutorials
     - [ffprobe](#ffprobe)
     - [cygwin](#cygwin)
     - [.tutcatalogrc sample](#tutcatalogrc-sample)
-    - [Runtime dependencies (Release build)](#runtime-dependencies--release-build-)
-    - [Bash on Ubuntu (optional)](#bash-on-ubuntu--optional-)
+    - [Runtime dependencies](#runtime-dependencies)
+    - [Bash on Ubuntu](#bash-on-ubuntu)
   + [Building](#building)
     - [CMake](#cmake)
     - [Ninja](#ninja)
@@ -27,7 +27,7 @@ A database for your local, remote and on-line tutorials
 * [Development notes](#development-notes)
   + [External dependencies built with conan](#external-dependencies-built-with-conan)
   + [Using git subtree](#using-git-subtree)
-* [Screenshots from the old TutCatalog (v2)](#screenshots-from-the-old-tutcatalog--v2-)
+* [Screenshots from the old TutCatalog](#screenshots-from-the-old-tutcatalog)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -87,7 +87,9 @@ tutorial folders:
   - C:/TUTORIALS
 ```
 
-#### Runtime dependencies (Release build)
+#### Runtime dependencies
+
+_For the Release Build_
 
 ```
 # C:\Qt\Tools\mingw530_32\bin
@@ -111,9 +113,11 @@ cd C:\Qt\5.9\mingw53_32\bin
 copy Qt5Core.dll Qt5Gui.dll Qt5PrintSupport.dll Qt5Svg.dll Qt5Widgets.dll c:\sources\bin
 ```
 
-#### Bash on Ubuntu (optional)
+#### Bash on Ubuntu
 
-_Bash on Ubuntu on Windows_ can be used for various task, including:
+_Optional_
+
+Can be used for various task, including:
 
 * alternate checksum verification, using `cfv`, for example
 * batch renaming
@@ -236,7 +240,7 @@ git remote add -f markdown https://github.com/borco/Anomade.git
 git subtree add --prefix src/3rd-party/markdown markdown master --squash
 ```
 
-## Screenshots from the old TutCatalog (v2)
+## Screenshots from the old TutCatalog
 
 ![main window](docs/tutcatalog-view-mode.png?raw=true "Main Window - View Mode")
 
