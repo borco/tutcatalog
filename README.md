@@ -8,6 +8,29 @@ A database for your local, remote and on-line tutorials
 
 ![main window](docs/tutcatalog-v3.png?raw=true "TutCatalog (v3) - Work in progress")
 
+## Contents
+
+* [Windows](#windows)
+  + [Running](#running)
+    - [ffprobe](#ffprobe)
+    - [cygwin](#cygwin)
+    - [.tutcatalogrc sample](#tutcatalogrc-sample)
+    - [Runtime dependencies (Release build)](#runtime-dependencies--release-build-)
+    - [Bash on Ubuntu (optional)](#bash-on-ubuntu--optional-)
+  + [Building](#building)
+    - [CMake](#cmake)
+    - [Ninja](#ninja)
+    - [Qt5](#qt5)
+    - [Conan](#conan)
+* [Linux](#linux)
+  + [Building](#building-1)
+* [Development notes](#development-notes)
+  + [External dependencies built with conan](#external-dependencies-built-with-conan)
+  + [Using git subtree](#using-git-subtree)
+* [Screenshots from the old TutCatalog (v2)](#screenshots-from-the-old-tutcatalog--v2-)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 ## Windows
 
 ### Running
