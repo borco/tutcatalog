@@ -24,8 +24,8 @@ class FolderPrivate : public QObject
         if (info) {
             m_info = *info;
             qDebug() << "- tutorial folder - setup:" << m_info.name();
-            if (!info->cachePath().isEmpty()) {
-                loadCache(info);
+            if (!m_info.cachePath().isEmpty()) {
+                loadCache();
             } else {
                 qDebug() << "  no cache defined - cache loading skipped";
             }
@@ -34,13 +34,17 @@ class FolderPrivate : public QObject
         }
     }
 
-    void loadCache(const FolderInfo* info) {
+    QString absolutePath(const QString& path) const {
+        return path.isEmpty() ? path : QDir(path).absolutePath();
+    }
+
+    void loadCache() {
         Q_Q(Folder);
 
         auto db = QSqlDatabase::database();
-        db.setDatabaseName(info->cachePath());
+        db.setDatabaseName(m_info.cachePath());
         if (!db.open()) {
-            qWarning() << "can't open cache file:" << info->cachePath();
+            qWarning() << "can't open cache file:" << m_info.cachePath();
             return;
         }
 
@@ -58,6 +62,7 @@ class FolderPrivate : public QObject
                         " viewed,"
                         " deleted,"
                         " online,"
+                        " no_backup,"
                         " duration,"
                         " size,"
                         " path,"
@@ -74,8 +79,9 @@ class FolderPrivate : public QObject
         while (query.next()) {
             ++count;
             auto t = new tutorials::Tutorial;
-            t->set_cache(info->cachePath());
-            t->set_group(info->name());
+            t->set_folder(q);
+            t->set_cache(m_info.cachePath());
+            t->set_group(m_info.name());
             t->set_isCached(true);
             t->set_isReadOnly(true);
 
@@ -93,9 +99,11 @@ class FolderPrivate : public QObject
             t->set_isViewed(query.value(++row).toBool());
             t->set_isDeleted(query.value(++row).toBool());
             t->set_isOnline(query.value(++row).toBool());
+            t->set_noBackup(query.value(++row).toBool());
             t->set_duration(query.value(++row).toInt());
-            t->set_size(query.value(++row).toInt());
-            t->set_path(query.value(++row).toString());
+            t->set_size(query.value(++row).value<qint64>());
+            // t->set_size(query.value(++row).toInt());
+            t->set_path(absolutePath(query.value(++row).toString()));
             t->set_levels(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_created(query.value(++row).toDateTime());
             t->set_released(query.value(++row).toDateTime());
@@ -103,13 +111,6 @@ class FolderPrivate : public QObject
             t->set_learningPaths(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
-
-            auto skipBackupPath = QDir(info->skipBackupPath()).absolutePath();
-            auto currentPath = QDir(t->path()).absolutePath();
-            t->set_skipBackup(!skipBackupPath.isEmpty() && currentPath.startsWith(skipBackupPath));
-            if (t->skipBackup()) {
-                qDebug() << t->title() << "will skip backup:" << t->path();
-            }
 
             emit q->loaded(t);
 
@@ -181,6 +182,14 @@ bool Folder::isRefreshing() const
 {
     Q_D(const Folder);
     return d->m_isRefreshing;
+}
+
+bool Folder::noBackup(const tutorials::Tutorial *tutorial) const
+{
+    Q_D(const Folder);
+    auto noBackupPath = d->m_info.noBackupPath();
+    auto currentPath = tutorial->path();
+    return !noBackupPath.isEmpty() && currentPath.startsWith(noBackupPath);
 }
 
 } // namespace folders

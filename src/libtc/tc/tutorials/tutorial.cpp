@@ -1,5 +1,7 @@
 #include "tutorial.h"
 
+#include <QFileInfo>
+
 namespace {
 static const int MinRating = -5;
 static const int MaxRating = 5;
@@ -11,15 +13,16 @@ namespace tutorials {
 
 Tutorial::Tutorial(QObject *parent)
     : QObject(parent)
+    , m_folder(nullptr)
     , m_tableId(InvalidTableId)
     , m_isCached(true)
     , m_isReadOnly(true)
-    , m_skipBackup(false)
     , m_hasInfo(false)
     , m_hasChecksum(false)
     , m_onToDoList(false)
     , m_onKeepList(false)
     , m_isComplete(false)
+    , m_noBackup(false)
     , m_isViewed(false)
     , m_isDeleted(false)
     , m_isOnline(false)
@@ -69,6 +72,11 @@ QString Tutorial::durationAsString(int duration)
 QString Tutorial::fileSizeToDurationAsString(qint64 size, int duration)
 {
     return fileSizeAsString(size/duration);
+}
+
+bool Tutorial::hasCanonicalName() const
+{
+    return QFileInfo(m_path).fileName() == m_title;
 }
 
 } // namespace tutorials

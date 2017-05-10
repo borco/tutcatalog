@@ -17,7 +17,7 @@ private Q_SLOTS:
         info.set_name("name");
         info.set_path("path");
         info.set_cachePath("cache");
-        info.set_skipBackupPath("skip backup");
+        info.set_noBackupPath("no backup");
         info.set_trashPath("trash");
         info.set_withCopies(true);
 
@@ -32,7 +32,7 @@ private Q_SLOTS:
         info.set_name("name");
         info.set_path("path");
         info.set_cachePath("cache");
-        info.set_skipBackupPath("skip backup");
+        info.set_noBackupPath("no backup");
         info.set_trashPath("trash");
         info.set_withCopies(true);
 

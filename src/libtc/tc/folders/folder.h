@@ -31,6 +31,8 @@ public:
     const FolderInfo* info() const;
     bool isRefreshing() const;
 
+    bool noBackup(const tutorials::Tutorial* tutorial) const;
+
 signals:
     void loaded(tutorials::Tutorial* tutorial);
     void refreshed(int total, int progress);

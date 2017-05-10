@@ -25,7 +25,7 @@ class LIBTCSHARED_EXPORT FolderInfo : public QObject
     QML_WRITABLE_VAR_PROPERTY(QString, name)
 
     // the path where to store tutorials that don't need backup
-    QML_WRITABLE_VAR_PROPERTY(QString, skipBackupPath)
+    QML_WRITABLE_VAR_PROPERTY(QString, noBackupPath)
 
     // the path where to put deleted tutorials
     QML_WRITABLE_VAR_PROPERTY(QString, trashPath)

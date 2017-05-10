@@ -6,22 +6,23 @@
 #include <QDateTime>
 
 namespace tc {
+
+namespace folders {
+class Folder;
+}
+
 namespace tutorials {
 
 class LIBTCSHARED_EXPORT Tutorial : public QObject
 {
     Q_OBJECT
 
+    QML_WRITABLE_VAR_PROPERTY(tc::folders::Folder*, folder)      // folder that owns this tutorial
     QML_WRITABLE_VAR_PROPERTY(QString, cache)       // an path to the cache file
     QML_WRITABLE_VAR_PROPERTY(int, tableId)         // an ID to identify the tutorial in the cache (it's id/rowid value)
 
     QML_WRITABLE_VAR_PROPERTY(bool, isCached)
     QML_WRITABLE_VAR_PROPERTY(bool, isReadOnly)
-
-    // true: this will not be backed up
-    // * informative;
-    // * determined by comparing the skip path from the project with the actual path
-    QML_WRITABLE_VAR_PROPERTY(bool, skipBackup)
 
     QML_WRITABLE_VAR_PROPERTY(QString, group)       // this is the name of the tutorial path as defined in the project file
     QML_WRITABLE_VAR_PROPERTY(QString, path)        // the full disk path
@@ -37,6 +38,7 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(bool, isViewed)       // true: you have viewed this tutorial
     QML_WRITABLE_VAR_PROPERTY(bool, isDeleted)      // true: you've had this tutorial, but deleted its files (except info*, image* and cover*)
     QML_WRITABLE_VAR_PROPERTY(bool, isOnline)       // true: this was never stored locally - all info is online
+    QML_WRITABLE_VAR_PROPERTY(bool, noBackup)     // true: this tutorial isn't backed up
     QML_WRITABLE_VAR_PROPERTY(int, duration)        // total tutorial duration, in minutes
     QML_WRITABLE_VAR_PROPERTY(int, rating)          // -5 .. +5: your rating
     QML_WRITABLE_VAR_PROPERTY(qint64, size)         // total size on disk (in kB)
@@ -62,6 +64,8 @@ public:
     static QString ratingAsString(int rating);
     static QString durationAsString(int duration);
     static QString fileSizeToDurationAsString(qint64 size, int duration);
+
+    bool hasCanonicalName() const;
 };
 
 } // namespace tutorials

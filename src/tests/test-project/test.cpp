@@ -16,8 +16,8 @@ private Q_SLOTS:
         QTest::addColumn<QStringList>("folders");
 
         QTest::newRow("folders: none set") << QByteArray("") << QStringList();
-        QTest::newRow("folders: set one") << QByteArray("tutorial folders:\n- path: foo\n") << QStringList("foo");
-        QTest::newRow("folders: set many") << QByteArray("tutorial folders:\n- path: foo\n- path: bar") << QStringList({ "foo", "bar" });
+        QTest::newRow("folders: set one") << QByteArray("tutorial folders:\n- path: /foo\n") << QStringList("/foo");
+        QTest::newRow("folders: set many") << QByteArray("tutorial folders:\n- path: /foo\n- path: /bar") << QStringList({ "/foo", "/bar" });
     }
 
     void testParseTutorialPath() {
@@ -38,8 +38,8 @@ private Q_SLOTS:
         QTest::addColumn<QByteArray>("input");
         QTest::addColumn<QString>("value");
 
-        QTest::newRow("trash: not set") << QByteArray("tutorial folders:\n- path: foo\n") << "";
-        QTest::newRow("trash: set") << QByteArray("tutorial folders:\n- trash : bar\n") << "bar";
+        QTest::newRow("trash: not set") << QByteArray("tutorial folders:\n- path: /foo\n") << "";
+        QTest::newRow("trash: set") << QByteArray("tutorial folders:\n- trash : /bar\n") << "/bar";
     }
 
     void testParseTutorialTrashPath() {

@@ -144,7 +144,7 @@ def create_database(args):
     conn = sqlite3.connect(args.file)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
-    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
+    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, no_backup BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
     for i in range(args.count):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, mode="w") as zf:
@@ -166,10 +166,11 @@ def create_database(args):
         deleted = i % 6 == 0
         online = i % 7 == 0
         duration = i + 10
-        size = i * 1000
+        size = i * i * 100 % (1024 * 1024 * 1024 * 100)
+        no_backup = i % 5 == 0
         parent_path = parent_paths[i % len(parent_paths)]
         skip_path = skip_paths[i % len(skip_paths)]
-        path = (skip_path if i % 5 == 0 else parent_path) + "/" + (title if i % 10 != 9 else title + "__")
+        path = (skip_path if no_backup else parent_path) + "/" + (title if i % 10 != 9 else title + "__")
         level = levels[i % len(levels)]
         created = datetime.datetime.now() - datetime.timedelta(minutes = i)
         released = datetime.datetime.now() - datetime.timedelta(hours = i)
@@ -179,7 +180,7 @@ def create_database(args):
         ets = extra_tags[i % len(extra_tags)]
         info = buffer.getbuffer()
 
-        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, has_checksum, todo, keep, complete, rating, viewed, deleted, online, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags, info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, has_checksum, todo, keep, complete, rating, viewed, deleted, online, no_backup, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags, info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 title,
                 publisher,
@@ -193,6 +194,7 @@ def create_database(args):
                 viewed,
                 deleted,
                 online,
+                no_backup,
                 duration,
                 size,
                 path,

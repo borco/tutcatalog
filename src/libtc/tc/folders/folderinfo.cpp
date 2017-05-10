@@ -22,7 +22,7 @@ FolderInfo &FolderInfo::operator=(const FolderInfo &other)
         set_name(other.m_name);
         set_path(other.m_path);
         set_cachePath(other.m_cachePath);
-        set_skipBackupPath(other.m_skipBackupPath);
+        set_noBackupPath(other.m_noBackupPath);
         set_trashPath(other.m_trashPath);
         set_withCopies(other.m_withCopies);
     }
@@ -35,7 +35,7 @@ bool FolderInfo::operator==(const FolderInfo &other) const
             && m_name == other.m_name
             && m_path == other.m_path
             && m_cachePath == other.m_cachePath
-            && m_skipBackupPath == other.m_skipBackupPath
+            && m_noBackupPath == other.m_noBackupPath
             && m_trashPath == other.m_trashPath
             && m_withCopies == other.m_withCopies;
 }

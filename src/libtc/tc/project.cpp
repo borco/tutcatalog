@@ -1,6 +1,7 @@
 #include "project.h"
 #include "folders/folderinfo.h"
 
+#include <QDir>
 #include <QFile>
 #include <QUrl>
 #include <yaml-cpp/yaml.h>
@@ -15,20 +16,26 @@ class ProjectPrivate
 
     QString getString(const YAML::Node& node,
                       const std::string& key,
-                      const QString& defaultValue = QString()) {
+                      const QString& defaultValue = QString()) const {
         return node[key]
                 ? QString::fromStdString(node[key].as<std::string>())
                 : defaultValue;
     }
 
-    folders::FolderInfo* getFolderInfo(const YAML::Node& node) {
+    QString absolutePath(const QString& path) const {
+        return path.isEmpty() ? path : QDir(path).absolutePath();
+    }
+
+    folders::FolderInfo* getFolderInfo(const YAML::Node& node) const {
         auto info = new folders::FolderInfo;
-        info->set_path(getString(node, "path"));
-        info->set_cachePath(getString(node, "cache"));
         info->set_name(getString(node, "name"));
-        info->set_skipBackupPath(getString(node, "skip backup"));
-        info->set_trashPath(getString(node, "trash"));
         info->set_withCopies(getString(node, "with copies", "no").compare("yes", Qt::CaseInsensitive) == 0);
+
+        info->set_path(absolutePath(getString(node, "path")));
+        info->set_cachePath(absolutePath(getString(node, "cache")));
+        info->set_noBackupPath(absolutePath(getString(node, "no backup")));
+        info->set_trashPath(absolutePath(getString(node, "trash")));
+
         return info;
     }
 

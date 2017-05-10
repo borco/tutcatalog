@@ -1,7 +1,9 @@
 #include "model.h"
 #include "tutorial.h"
+#include "tc/folders/folder.h"
 #include "tc/ui/theme.h"
 
+#include <QBrush>
 #include <QDebug>
 #include <QFont>
 
@@ -136,13 +138,13 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::Created: return item->created();
         case Model::Modified: return item->modified();
         case Model::Released: return item->released();
-        case Model::SkipBackup: return item->skipBackup() ? "\uf071" : "";
+        case Model::SkipBackup: return item->noBackup() ? "\uf071" : "";
         case Model::FileSizeToDuration: return Tutorial::fileSizeToDurationAsString(item->size(), item->duration());
         default: break;
         }
     }
 
-    case Qt::FontRole:
+    case Qt::FontRole: {
         switch (column) {
         case Model::HasInfo:
         case Model::HasChecksum:
@@ -157,6 +159,36 @@ QVariant Model::data(const QModelIndex &index, int role) const
         default:
             break;
         }
+    }
+
+    case Qt::ForegroundRole: {
+        static const QBrush WarningColor { QColor("#A00") };
+        static const QBrush InfoColor { QColor("#A50") };
+        switch(column) {
+        case Model::Size: {
+            const qint64 GigaByte = 1024 * 1024 * 1024;
+            qint64 size = item->size();
+            if (size > 10 * GigaByte)
+                return WarningColor;
+            else if (size > GigaByte)
+                return InfoColor;
+            break;
+        }
+
+        case Model::Title: {
+            if (!item->hasCanonicalName())
+                return WarningColor;
+            break;
+        }
+
+        case Model::IsDeleted:
+        case Model::SkipBackup:
+            return InfoColor;
+
+        default:
+            break;
+        }
+    }
 
     default:
         break;
