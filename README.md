@@ -1,13 +1,12 @@
-# TutCatalog
+# TutCatalog (v3)
 
 > This is a reimplementation of an older personal project. Some parts are still missing!
 
 Copyright (c) 2016-2017 Ioan Călin Borcoman
 
-A database for your local, remote and on-line tutorials:
+A database for your local, remote and on-line tutorials
 
-* **tut-catalog**: the main tutorial database application
-* **info-viewer**: viewer and editor for individual *info.tc* files
+![main window](docs/tutcatalog-v3.png?raw=true "TutCatalog (v3) - Work in progress")
 
 ## Windows
 
@@ -214,14 +213,7 @@ git remote add -f markdown https://github.com/borco/Anomade.git
 git subtree add --prefix src/3rd-party/markdown markdown master --squash
 ```
 
-## Screenshots
-
-### Current reimplementation
-
-![main window](docs/tutcatalog-v3.png?raw=true "TutCatalog (v3) - Work in progress")
-
-
-### From the old app
+## Screenshots from the old TutCatalog (v2)
 
 ![main window](docs/tutcatalog-view-mode.png?raw=true "Main Window - View Mode")
 
