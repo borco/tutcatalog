@@ -10,6 +10,7 @@ class MainWindow;
 }
 
 namespace tc {
+
 class Persistent;
 
 namespace folders {
@@ -21,7 +22,11 @@ class Model;
 class ProxyModel;
 }
 
+namespace ui {
+class TutorialsWidget;
 }
+
+} // namespace tc
 
 class MainWindow : public QMainWindow
 {
@@ -32,16 +37,19 @@ public:
     ~MainWindow();
 
 private:
+    void closeEvent(QCloseEvent* event) override;
+
     void setupUi();
+    void setupStatusBar();
     void processCommandLineOption(const QCommandLineParser& parser);
     void loadProject(const QString& fileName);
     void loadSettings();
     void saveSettings();
-    void closeEvent(QCloseEvent* event) override;
 
     Ui::MainWindow *m_ui { nullptr };
     QVector<tc::Persistent*> m_persistents;
 
     tc::tutorials::Model* m_tutorials { nullptr };
     tc::folders::Collection* m_folders { nullptr };
+    tc::ui::TutorialsWidget* m_tutorialsWidget { nullptr };
 };

@@ -7,6 +7,7 @@ namespace tc {
 
 namespace tutorials {
 class Model;
+class ProxyModel;
 }
 
 namespace ui {
@@ -27,6 +28,7 @@ public:
     void loadSettings(const Settings &settings) override;
 
     void setModel(tutorials::Model* model);
+    tutorials::ProxyModel* proxyModel() const;
 
 private:
     Q_DECLARE_PRIVATE(TutorialsWidget)

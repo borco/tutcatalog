@@ -180,5 +180,11 @@ void TutorialsWidget::setModel(tutorials::Model *model)
     d->setModel(model);
 }
 
+tutorials::ProxyModel *TutorialsWidget::proxyModel() const
+{
+    Q_D(const TutorialsWidget);
+    return d->m_proxyModel;
+}
+
 } // namespace ui
 } // namespace tc

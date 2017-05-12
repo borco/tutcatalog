@@ -26,6 +26,8 @@ add_library(libtc SHARED
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
+    tc/ui/labeledvalue.cpp
+    tc/ui/labeledvalue.h
     tc/ui/logwidget.cpp
     tc/ui/logwidget.h
     tc/ui/pixmap.cpp

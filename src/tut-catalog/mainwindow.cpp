@@ -9,12 +9,14 @@
 #include "tc/folders/folder.h"
 #include "tc/folders/folderinfo.h"
 
+#include "tc/ui/labeledvalue.h"
 #include "tc/ui/logwidget.h"
 #include "tc/ui/dockwidget.h"
 #include "tc/ui/theme.h"
 #include "tc/ui/tutorialswidget.h"
 
 #include "tc/tutorials/model.h"
+#include "tc/tutorials/proxymodel.h"
 #include "tc/tutorials/tutorial.h"
 
 #include <QCommandLineParser>
@@ -62,23 +64,49 @@ void MainWindow::setupUi()
     addDockWidget(Qt::LeftDockWidgetArea, logDockWidget);
     m_persistents << logWidget;
 
-    auto tutorialsWidget = new TutorialsWidget(this);
-    tutorialsWidget->setModel(m_tutorials);
-    auto tutorialsDockWidget = new DockWidget(tutorialsWidget, this);
+    m_tutorialsWidget = new TutorialsWidget(this);
+    m_tutorialsWidget->setModel(m_tutorials);
+    auto tutorialsDockWidget = new DockWidget(m_tutorialsWidget, this);
     tutorialsDockWidget->setObjectName("tutorialsDockWidget");
     addDockWidget(Qt::LeftDockWidgetArea, tutorialsDockWidget);
-    m_persistents << tutorialsWidget;
+    m_persistents << m_tutorialsWidget;
 
     // toolbar
     m_ui->toolBar->setStyleSheet(Theme::MainToolBarStyle);
     m_ui->toolBar->setIconSize(QSize(Theme::MainToolBarIconSize,
                                      Theme::MainToolBarIconSize));
 
-//    m_ui->toolBar->addActions(m_folders->actions());
-//    m_ui->toolBar->addSeparator();
-
     m_ui->toolBar->addAction(tutorialsDockWidget->toggleViewAction());
     m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
+
+    setupStatusBar();
+}
+
+void MainWindow::setupStatusBar()
+{
+    auto tutorialsCountLabel = new tc::ui::LabeledValue;
+    tutorialsCountLabel->set_label(tr("Tutorials:"));
+    tutorialsCountLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    tutorialsCountLabel->setMinimumWidth(140);
+
+    auto proxyModel = m_tutorialsWidget->proxyModel();
+
+    auto updateTutorialsCount = [=]() {
+        int totalCount = m_tutorials->rowCount(QModelIndex());
+        int shownCount = proxyModel->rowCount(QModelIndex());
+        tutorialsCountLabel->set_value(totalCount == shownCount ? QString::number(totalCount) : tr("%1 (of %2)").arg(shownCount).arg(totalCount));
+    };
+
+    connect(proxyModel, &QAbstractListModel::rowsInserted, updateTutorialsCount);
+    connect(proxyModel, &QAbstractListModel::rowsRemoved, updateTutorialsCount);
+    connect(proxyModel, &QAbstractListModel::modelReset, updateTutorialsCount);
+    connect(m_tutorials, &QAbstractListModel::rowsInserted, updateTutorialsCount);
+    connect(m_tutorials, &QAbstractListModel::rowsRemoved, updateTutorialsCount);
+    connect(m_tutorials, &QAbstractListModel::modelReset, updateTutorialsCount);
+
+    m_ui->statusBar->addWidget(tutorialsCountLabel);
+
+    m_ui->statusBar->setStyleSheet(tc::ui::Theme::StatusBarStyle);
 }
 
 void MainWindow::processCommandLineOption(const QCommandLineParser &parser)
