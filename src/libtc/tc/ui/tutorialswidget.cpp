@@ -9,10 +9,12 @@
 #include "tc/tutorials/proxymodel.h"
 #include "tc/tutorials/tutorial.h"
 
+#include <QAction>
+#include <QDebug>
 #include <QHeaderView>
+#include <QMenu>
 #include <QTreeView>
 #include <QVBoxLayout>
-
 
 namespace {
 const QString WidgetGroup { "TutorialsWidget/" };
@@ -24,13 +26,20 @@ namespace ui {
 
 class TutorialsWidgetPrivate : public QObject
 {
+    struct ColumnInfo {
+        int index { -1 };
+        QAction* hideAction { nullptr };
+    };
+
     Q_DECLARE_PUBLIC(TutorialsWidget)
     TutorialsWidget* const q_ptr { nullptr };
 
     QList<QAction*> m_dockToolBarAction;
     QList<QAction*> m_appToolBarAction;
 
-    QTreeView* m_view;
+    QTreeView* m_view { nullptr };
+    QMap<QString, ColumnInfo> m_columns;
+    QMenu* m_hideColumnsMenu { nullptr };
 
     tutorials::Model* m_model { nullptr };
     tutorials::ProxyModel* m_proxyModel { nullptr };
@@ -64,14 +73,24 @@ class TutorialsWidgetPrivate : public QObject
 
         q->setWindowTitle(tr("Tutorials"));
         q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE53B", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
+
+        auto action = new QAction;
+        action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uF141", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
+        m_hideColumnsMenu = new QMenu;
+        action->setMenu(m_hideColumnsMenu);
+
+        m_dockToolBarAction.append(action);
     }
 
     void setModel(tutorials::Model* model) {
+        Q_Q(TutorialsWidget);
+
         if (model == m_model)
             return;
 
         m_model = model;
         m_proxyModel->setSourceModel(m_model);
+        setColumnHideMenu();
     }
 
     void saveSettings(Settings &settings) const {
@@ -80,6 +99,43 @@ class TutorialsWidgetPrivate : public QObject
 
     void loadSettings(const Settings &settings) {
         m_view->header()->restoreState(settings.value(HeaderStateKey).toByteArray());
+        restoreColumnHideMenuState();
+    }
+
+    void setColumnHideMenu() {
+        m_hideColumnsMenu->clear();
+        m_columns.clear();
+
+        for (int i = 0; i < m_model->columns().size(); ++i) {
+            auto text = m_model->columns()[i];
+            auto action = new QAction;
+            action->setText(text);
+            action->setCheckable(true);
+            action->setChecked(true);
+            connect(action, &QAction::toggled, [=](bool value) { m_view->setColumnHidden(i, !value);} );
+            m_columns[text] = { i, action};
+        }
+
+        auto keys = m_columns.keys();
+        keys.sort();
+
+        for(auto k: keys) {
+            m_hideColumnsMenu->addAction(m_columns[k].hideAction);
+        }
+    }
+
+    void restoreColumnHideMenuState() {
+        if (!m_model)
+            return;
+
+        if (m_columns.size() != m_view->header()->count()) {
+            qWarning() << "failed to restore the state of the tutorials view menus";
+            return;
+        }
+
+        for (auto c: m_columns) {
+            c.hideAction->setChecked(!m_view->header()->isSectionHidden(c.index));
+        }
     }
 };
 

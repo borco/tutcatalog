@@ -50,6 +50,8 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
+    const QStringList& columns() const;
+
 private:
     QScopedPointer<ModelPrivate> const d_ptr;
     Q_DECLARE_PRIVATE(Model)

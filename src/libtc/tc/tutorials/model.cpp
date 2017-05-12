@@ -12,7 +12,7 @@ namespace tutorials {
 
 struct ModelPrivate : public QObject
 {
-    const QVector<QString> Labels {
+    const QStringList Labels {
         tr("Title"),
         tr("Publisher"),
         tr("Authors"),
@@ -232,6 +232,12 @@ QVariant Model::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+const QStringList &Model::columns() const
+{
+    Q_D(const Model);
+    return d->Labels;
 }
 
 }
