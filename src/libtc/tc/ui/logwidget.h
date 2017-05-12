@@ -15,8 +15,8 @@ public:
     explicit LogWidget(QWidget* parent = nullptr);
     ~LogWidget();
 
-    QList<QAction *> dockToolBarActions() const override;
-    QList<QAction *> appToolBarActions() const override;
+    QList<Action *> dockToolBarActions() const override;
+    QList<Action *> appToolBarActions() const override;
 
     void saveSettings(Settings &settings) const override;
     void loadSettings(const Settings &settings) override;

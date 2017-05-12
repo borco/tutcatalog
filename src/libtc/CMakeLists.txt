@@ -20,6 +20,7 @@ add_library(libtc SHARED
     tc/folders/folderinfo.cpp
     tc/folders/folderinfo.h
 
+    tc/ui/action.h
     tc/ui/delegates.cpp
     tc/ui/delegates.h
     tc/ui/dockablewidget.h

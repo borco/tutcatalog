@@ -1,4 +1,5 @@
 #include "tutorialswidget.h"
+#include "action.h"
 #include "delegates.h"
 #include "pixmap.h"
 #include "theme.h"
@@ -9,7 +10,6 @@
 #include "tc/tutorials/proxymodel.h"
 #include "tc/tutorials/tutorial.h"
 
-#include <QAction>
 #include <QDebug>
 #include <QHeaderView>
 #include <QMenu>
@@ -28,14 +28,14 @@ class TutorialsWidgetPrivate : public QObject
 {
     struct ColumnInfo {
         int index { -1 };
-        QAction* hideAction { nullptr };
+        Action* hideAction { nullptr };
     };
 
     Q_DECLARE_PUBLIC(TutorialsWidget)
     TutorialsWidget* const q_ptr { nullptr };
 
-    QList<QAction*> m_dockToolBarAction;
-    QList<QAction*> m_appToolBarAction;
+    QList<Action*> m_dockToolBarAction;
+    QList<Action*> m_appToolBarAction;
 
     QTreeView* m_view { nullptr };
     QMap<QString, ColumnInfo> m_columns;
@@ -74,7 +74,8 @@ class TutorialsWidgetPrivate : public QObject
         q->setWindowTitle(tr("Tutorials"));
         q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE53B", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
 
-        auto action = new QAction;
+        auto action = new Action;
+        action->set_instantPopup(true);
         action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uF141", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         m_hideColumnsMenu = new QMenu;
         action->setMenu(m_hideColumnsMenu);
@@ -108,7 +109,7 @@ class TutorialsWidgetPrivate : public QObject
 
         for (int i = 0; i < m_model->columns().size(); ++i) {
             auto text = m_model->columns()[i];
-            auto action = new QAction;
+            auto action = new Action;
             action->setText(text);
             action->setCheckable(true);
             action->setChecked(true);
@@ -149,13 +150,13 @@ TutorialsWidget::~TutorialsWidget()
 {
 }
 
-QList<QAction *> TutorialsWidget::dockToolBarActions() const
+QList<Action *> TutorialsWidget::dockToolBarActions() const
 {
     Q_D(const TutorialsWidget);
     return d->m_dockToolBarAction;
 }
 
-QList<QAction *> TutorialsWidget::appToolBarActions() const
+QList<Action *> TutorialsWidget::appToolBarActions() const
 {
     Q_D(const TutorialsWidget);
     return d->m_appToolBarAction;

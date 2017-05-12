@@ -1,10 +1,10 @@
 #include "logwidget.h"
+#include "action.h"
 #include "pixmap.h"
 #include "theme.h"
 
 #include "tc/settings.h"
 
-#include <QAction>
 #include <QTextEdit>
 #include <QVBoxLayout>
 
@@ -30,10 +30,10 @@ private:
     Q_DECLARE_PUBLIC(LogWidget)
     LogWidget* const q_ptr { nullptr };
     QTextEdit* m_edit { nullptr };
-    QList<QAction*> m_dockToolBarActions;
-    QList<QAction*> m_appToolBarActions;
-    QAction* m_showDebugMessagesAction { nullptr };
-    QAction* m_wrapLongLinesAction { nullptr };
+    QList<Action*> m_dockToolBarActions;
+    QList<Action*> m_appToolBarActions;
+    Action* m_showDebugMessagesAction { nullptr };
+    Action* m_wrapLongLinesAction { nullptr };
     bool m_showDebugMessages { true };
 
     static LogWidgetPrivate* m_instance;
@@ -96,7 +96,7 @@ private:
 
         q->setLayout(layout);
 
-        auto action = new QAction;
+        auto action = new Action;
         action->setToolTip(tr("Show debug messages"));
         action->setCheckable(true);
         action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf188", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
@@ -106,7 +106,7 @@ private:
         m_dockToolBarActions.append(action);
 
         bool defaultWrapText = true;
-        action = new QAction;
+        action = new Action;
         action->setToolTip(tr("Wrap long lines"));
         action->setCheckable(true);
         action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE25B", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
@@ -116,11 +116,11 @@ private:
         m_wrapLongLinesAction = action;
         m_dockToolBarActions.append(action);
 
-        action = new QAction;
+        action = new Action;
         action->setSeparator(true);
         m_dockToolBarActions.append(action);
 
-        action = new QAction;
+        action = new Action;
         action->setToolTip(tr("Clear all messages"));
         action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE872", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         connect(action, &QAction::triggered, m_edit, &QTextEdit::clear);
@@ -154,13 +154,13 @@ LogWidget::~LogWidget()
 {
 }
 
-QList<QAction *> LogWidget::dockToolBarActions() const
+QList<Action *> LogWidget::dockToolBarActions() const
 {
     Q_D(const LogWidget);
     return d->m_dockToolBarActions;
 }
 
-QList<QAction *> LogWidget::appToolBarActions() const
+QList<Action *> LogWidget::appToolBarActions() const
 {
     Q_D(const LogWidget);
     return d->m_appToolBarActions;

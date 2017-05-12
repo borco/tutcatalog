@@ -1,10 +1,12 @@
 #include "dockwidget.h"
 #include "dockablewidget.h"
+#include "action.h"
 #include "pixmap.h"
 #include "theme.h"
 
 #include <QLabel>
 #include <QToolBar>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 namespace tc {
@@ -31,7 +33,16 @@ class DockWidgetPrivate: public QObject
         tb->setIconSize(QSize(Theme::DockToolBarIconSize,
                               Theme::DockToolBarIconSize));
         tb->addSeparator();
-        tb->addActions(m_content->dockToolBarActions());
+        for (auto a: m_content->dockToolBarActions()) {
+            if (!a->instantPopup()) {
+                tb->addAction(a);
+            } else {
+                auto button = new QToolButton;
+                button->setDefaultAction(a);
+                button->setPopupMode(QToolButton::InstantPopup);
+                tb->addWidget(button);
+            }
+        }
 
         auto empty = new QWidget();
         empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
