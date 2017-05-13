@@ -23,6 +23,8 @@ public:
     void setup(const QVector<FolderInfo*>& infos);
     void startLoad();
 
+    QByteArray cachedInfo(const Tutorial* tutorial) const;
+
 signals:
     void loaded(tutorials::Tutorial* tutorial);
 

@@ -190,6 +190,36 @@ class CollectionPrivate : public QObject
 
         QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
     }
+
+    QByteArray cachedInfo(const Tutorial* tutorial) const {
+        const FolderInfo* folderInfo = tutorial->folderInfo();
+        Q_ASSERT(!folderInfo->cachePath().isEmpty());
+
+        int index = tutorial->index();
+        Q_ASSERT(index >= 0);
+
+        auto db = QSqlDatabase::database();
+        db.setDatabaseName(folderInfo->cachePath());
+        if (!db.open()) {
+            qWarning() << "can't open cache file:" << folderInfo->cachePath();
+            return QByteArray();
+        }
+
+        QSqlQuery query;
+        query.prepare("SELECT info FROM tutorials where id=:id");
+        query.bindValue(":id", index);
+        if (!query.exec()) {
+            qWarning() << "failed to retrieve info";
+            return QByteArray();
+        }
+
+        if (!query.next()) {
+            qWarning() << "no info found for index:" << index;
+            return QByteArray();
+        }
+
+        return query.value(0).toByteArray();
+    }
 };
 
 Collection::Collection(QObject *parent)
@@ -212,6 +242,12 @@ void Collection::startLoad()
 {
     Q_D(Collection);
     d->startLoad();
+}
+
+QByteArray Collection::cachedInfo(const Tutorial *tutorial) const
+{
+    Q_D(const Collection);
+    return d->cachedInfo(tutorial);
 }
 
 } // namespace folders

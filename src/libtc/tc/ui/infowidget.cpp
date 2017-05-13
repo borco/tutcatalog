@@ -2,13 +2,18 @@
 #include "pixmap.h"
 #include "theme.h"
 
+#include "tc/tutorials/collection.h"
 #include "tc/tutorials/tutorial.h"
 
+#include <QBuffer>
+#include <QDebug>
 #include <QLabel>
 #include <QSet>
 #include <QStackedWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
+
+#include <quazip/quazip.h>
 
 namespace tc {
 namespace ui {
@@ -62,6 +67,19 @@ class InfoWidgetPrivate : public QObject
                                "<br>Index: <b>%2</b>")
                 .arg(tutorial->title())
                 .arg(tutorial->index());
+
+        QByteArray rawInfo = tutorial->collection()->cachedInfo(tutorial);
+        if (!rawInfo.isEmpty()) {
+            QBuffer buffer(&rawInfo);
+            QuaZip zip(&buffer);
+
+            if (!zip.open(QuaZip::mdUnzip)) {
+                qWarning() << "couldn't open info buffer";
+            } else {
+                text += "<br>Contents:<br>" + zip.getFileNameList().join("<br>");
+            }
+        }
+
         m_edit->setText(text);
     }
 
