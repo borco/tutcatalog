@@ -2,6 +2,8 @@
 #include "pixmap.h"
 #include "theme.h"
 
+#include "tc/tutorials/tutorial.h"
+
 #include <QLabel>
 #include <QSet>
 #include <QStackedWidget>
@@ -35,14 +37,14 @@ class InfoWidgetPrivate : public QObject
         label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         m_noSelectionPage = label;
 
+        label = new QLabel(tr("Multiple tutorials selected"));
+        label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        m_multipleSelectionPage = label;
+
         m_edit = new QTextEdit;
         m_edit->setReadOnly(true);
         m_edit->setFrameStyle(QFrame::NoFrame);
         m_singleSelectionPage = m_edit;
-
-        label = new QLabel(tr("Multiple tutorials selected"));
-        label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        m_multipleSelectionPage = label;
 
         m_stackedWidget->addWidget(m_noSelectionPage);
         m_stackedWidget->addWidget(m_singleSelectionPage);
@@ -55,13 +57,31 @@ class InfoWidgetPrivate : public QObject
         q->setLayout(layout);
     }
 
-    void onSelectionChanged(const QSet<int>& selection) {
+    void updateFromCache(tutorials::Tutorial* tutorial) {
+        QString text = QString("Title: <b>%1</b>"
+                               "<br>Index: <b>%2</b>")
+                .arg(tutorial->title())
+                .arg(tutorial->index());
+        m_edit->setText(text);
+    }
+
+    void updateFromDisk(tutorials::Tutorial* tutorial) {
+        QString text = QString("Title: <b>%1</b><br>Index: <b>%2</b>").arg(tutorial->title()).arg(tutorial->index());
+        text += "<br><b>Update from disk not implemented yet.</b>";
+        m_edit->setText(text);
+    }
+
+    void onSelectionChanged(const QSet<tutorials::Tutorial*> &selection) {
         if (selection.size() == 0) {
             m_stackedWidget->setCurrentWidget(m_noSelectionPage);
         } else if (selection.size() == 1) {
             m_stackedWidget->setCurrentWidget(m_singleSelectionPage);
-            int row = selection.values()[0];
-            m_edit->setText(QString::number(row));
+            tutorials::Tutorial* t = selection.values()[0];
+            if (t->isCached()) {
+                updateFromCache(t);
+            } else {
+                updateFromDisk(t);
+            }
         } else {
             m_stackedWidget->setCurrentWidget(m_multipleSelectionPage);
         }
@@ -78,7 +98,7 @@ InfoWidget::~InfoWidget()
 {
 }
 
-void InfoWidget::onSelectionChanged(const QSet<int> &selection)
+void InfoWidget::onSelectionChanged(const QSet<tutorials::Tutorial*> &selection)
 {
     Q_D(InfoWidget);
     d->onSelectionChanged(selection);

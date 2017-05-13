@@ -85,17 +85,18 @@ class TutorialsWidgetPrivate : public QObject
         m_dockToolBarAction.append(action);
     }
 
-    QSet<int> selectedRows() const {
-        QSet<int> rows;
+    QSet<tutorials::Tutorial*> selectedTutorials() const {
+        QSet<tutorials::Tutorial*> selection;
         foreach (QModelIndex index, m_view->selectionModel()->selectedIndexes()) {
-            rows << m_proxyModel->mapToSource(index).row();
+            int row = m_proxyModel->mapToSource(index).row();
+            selection << m_model->tutorial(row);
         }
-        return rows;
+        return selection;
     }
 
     void onSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/) {
         Q_Q(TutorialsWidget);
-        q->update_selection(selectedRows());
+        q->update_selection(selectedTutorials());
     }
 
     void setModel(tutorials::Model* model) {

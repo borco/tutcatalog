@@ -9,6 +9,7 @@
 namespace tc {
 
 namespace tutorials {
+class Tutorial;
 class Model;
 class ProxyModel;
 }
@@ -20,7 +21,7 @@ class LIBTCSHARED_EXPORT TutorialsWidget: public DockableWidget, public Persiste
 {
     Q_OBJECT
 
-    QML_READONLY_VAR_PROPERTY(QSet<int>, selection)
+    QML_READONLY_VAR_PROPERTY(QSet<tc::tutorials::Tutorial*>, selection)
 
 public:
     explicit TutorialsWidget(QWidget* parent = nullptr);

@@ -88,6 +88,7 @@ private:
         while (query.next()) {
             ++count;
             auto t = new tutorials::Tutorial;
+            t->set_collection(m_collection);
             t->set_folderInfo(info);
             t->set_isCached(true);
             t->set_isReadOnly(true);

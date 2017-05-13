@@ -8,12 +8,14 @@
 namespace tc {
 namespace tutorials {
 
+class Collection;
 class FolderInfo;
 
 class LIBTCSHARED_EXPORT Tutorial : public QObject
 {
     Q_OBJECT
 
+    QML_WRITABLE_VAR_PROPERTY(tc::tutorials::Collection*, collection)
     QML_WRITABLE_VAR_PROPERTY(tc::tutorials::FolderInfo*, folderInfo)
     QML_WRITABLE_VAR_PROPERTY(int, index)           // an ID to identify the tutorial in the cache (it's id/rowid value)
 

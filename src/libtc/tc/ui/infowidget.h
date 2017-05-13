@@ -6,6 +6,11 @@
 #include <QWidget>
 
 namespace tc {
+
+namespace tutorials {
+class Tutorial;
+}
+
 namespace ui {
 
 class InfoWidgetPrivate;
@@ -15,7 +20,7 @@ public:
     explicit InfoWidget(QWidget* parent = nullptr);
     ~InfoWidget();
 
-    void onSelectionChanged(const QSet<int>& selection);
+    void onSelectionChanged(const QSet<tc::tutorials::Tutorial*>& selection);
 
 private:
     Q_DECLARE_PRIVATE(InfoWidget)
