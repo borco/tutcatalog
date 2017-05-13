@@ -240,5 +240,11 @@ const QStringList &Model::columns() const
     return d->Labels;
 }
 
+Tutorial *Model::tutorial(int row) const
+{
+    Q_D(const Model);
+    return d->items.value(row);
+}
+
 }
 }

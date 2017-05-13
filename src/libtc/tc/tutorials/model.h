@@ -51,6 +51,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     const QStringList& columns() const;
+    Tutorial* tutorial(int row) const;
 
 private:
     QScopedPointer<ModelPrivate> const d_ptr;
