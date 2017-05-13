@@ -3,23 +3,17 @@
 #include "libtc_global.h"
 #include "tc/persistent.h"
 
-#include "dockablewidget.h"
+#include <QWidget>
 
 namespace tc {
 namespace ui {
 
 class InfoWidgetPrivate;
-class LIBTCSHARED_EXPORT InfoWidget: public DockableWidget, public Persistent
+class LIBTCSHARED_EXPORT InfoWidget: public QWidget
 {
 public:
     explicit InfoWidget(QWidget* parent = nullptr);
     ~InfoWidget();
-
-    QList<Action *> dockToolBarActions() const override;
-    QList<Action *> appToolBarActions() const override;
-
-    void saveSettings(Settings &settings) const override;
-    void loadSettings(const Settings &settings) override;
 
     void onSelectionChanged(const QSet<int>& selection);
 
