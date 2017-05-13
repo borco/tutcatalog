@@ -12,7 +12,6 @@
 #include "tc/ui/tutorialswidget.h"
 
 #include "tc/tutorials/collection.h"
-#include "tc/tutorials/folder.h"
 #include "tc/tutorials/folderinfo.h"
 #include "tc/tutorials/model.h"
 #include "tc/tutorials/proxymodel.h"
@@ -131,17 +130,13 @@ void MainWindow::loadProject(const QString &fileName)
 {
     using namespace tc;
 
-    QTime t;
-    t.start();
-
     Project p;
     if (p.readFromFile(fileName)) {
         setWindowTitle(QString("%2 - %1").arg(MY_APPLICATION, QDir::toNativeSeparators(fileName)));
         m_folders->setup(p.folderInfos());
-        m_folders->load();
-        qDebug() << "loaded" << fileName << "in" << t.elapsed() << "msec";
+        m_folders->startLoad();
     } else {
-        qDebug() << "loading" << fileName << "failed after" << t.elapsed() << "msec";
+        qDebug() << "loading" << fileName << "failed";
     }
 }
 

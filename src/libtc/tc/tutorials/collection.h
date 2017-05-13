@@ -8,7 +8,6 @@ class QAction;
 namespace tc {
 namespace tutorials {
 
-class Folder;
 class FolderInfo;
 class Tutorial;
 
@@ -22,9 +21,7 @@ public:
     ~Collection();
 
     void setup(const QVector<FolderInfo*>& infos);
-    void load();
-
-    QList<QAction*> actions() const;
+    void startLoad();
 
 signals:
     void loaded(tutorials::Tutorial* tutorial);

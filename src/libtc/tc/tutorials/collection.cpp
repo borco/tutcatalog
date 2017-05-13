@@ -1,5 +1,4 @@
 #include "collection.h"
-#include "folder.h"
 #include "folderinfo.h"
 #include "tutorial.h"
 
@@ -8,89 +7,187 @@
 
 #include <QAction>
 #include <QDebug>
+#include <QDir>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QTextCursor>
+#include <QThread>
+#include <QTimer>
 
 namespace tc {
 namespace tutorials {
+
+typedef QVector<FolderInfo*> Infos;
+
+class LoaderThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    explicit LoaderThread(Collection* collection, Infos& infos)
+        : m_infos(infos)
+        , m_collection(collection) {}
+
+signals:
+    void warning(QString message);
+    void info(QString message);
+    void debug(QString message);
+
+private:
+    void run() override {
+        QTime t;
+        t.start();
+
+        for(auto info: m_infos) {
+            loadCache(info);
+        }
+
+        emit info(QString("finished loading data in %1 sec").arg(t.elapsed() / 1000., 0, 'f', 2));
+    }
+
+    QString absolutePath(const QString& path) const {
+        return path.isEmpty() ? path : QDir(path).absolutePath();
+    }
+
+    void loadCache(FolderInfo* info) {
+        auto db = QSqlDatabase::database();
+        db.setDatabaseName(info->cachePath());
+        if (!db.open()) {
+            emit warning(QString("can't open cache file: \"%1\"").arg(info->cachePath()));
+            return;
+        }
+
+        QSqlQuery query("SELECT"
+                        " id,"
+                        " title,"
+                        " publisher,"
+                        " authors,"
+                        " has_info,"
+                        " has_checksum,"
+                        " todo,"
+                        " keep,"
+                        " complete,"
+                        " rating,"
+                        " viewed,"
+                        " deleted,"
+                        " online,"
+                        " no_backup,"
+                        " duration,"
+                        " size,"
+                        " path,"
+                        " levels,"
+                        " created,"
+                        " released,"
+                        " modified,"
+                        " learning_paths,"
+                        " tags,"
+                        " extra_tags"
+                        " FROM tutorials");
+        int count { 0 };
+
+        while (query.next()) {
+            ++count;
+            auto t = new tutorials::Tutorial;
+            t->set_folderInfo(info);
+            t->set_isCached(true);
+            t->set_isReadOnly(true);
+
+            int row = -1;
+            t->set_index(query.value(++row).toInt());
+            t->set_title(query.value(++row).toString());
+            t->set_publisher(query.value(++row).toString());
+            t->set_authors(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_hasInfo(query.value(++row).toBool());
+            t->set_hasChecksum(query.value(++row).toBool());
+            t->set_onToDoList(query.value(++row).toBool());
+            t->set_onKeepList(query.value(++row).toBool());
+            t->set_isComplete(query.value(++row).toBool());
+            t->set_rating(query.value(++row).toInt());
+            t->set_isViewed(query.value(++row).toBool());
+            t->set_isDeleted(query.value(++row).toBool());
+            t->set_isOnline(query.value(++row).toBool());
+            t->set_noBackup(query.value(++row).toBool());
+            t->set_duration(query.value(++row).toInt());
+            t->set_size(query.value(++row).value<qint64>());
+            // t->set_size(query.value(++row).toInt());
+            t->set_path(absolutePath(query.value(++row).toString()));
+            t->set_levels(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_created(query.value(++row).toDateTime());
+            t->set_released(query.value(++row).toDateTime());
+            t->set_modified(query.value(++row).toDateTime());
+            t->set_learningPaths(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+
+            t->moveToThread(m_collection->thread());
+
+            emit m_collection->loaded(t);
+
+            /*
+             * NOTE: allow the GUI thread to do some redrawing
+             * - the frequency and duration where determined by trial and error
+             * - this can be probably be removed if a better way is found
+             *   that allows both fast loading for the data and UI refreshes
+             */
+            if (count % 10 == 0) usleep(1);
+
+//            if (t->parent() == nullptr) {
+//                qWarning() << "deleting unwanted tutorial" << t->title();
+//                t->deleteLater();
+//            }
+        }
+
+        db.close();
+
+        emit debug(QString("  loaded %1 tutorials from cache: \"%2\"").arg(count).arg(info->cachePath()));
+    }
+
+    Infos& m_infos;
+    Collection* m_collection;
+};
 
 class CollectionPrivate : public QObject
 {
     Q_DECLARE_PUBLIC(Collection)
     Collection* const q_ptr { nullptr };
-    QVector<Folder*> m_folders;
-    QList<QAction*> m_actions;
-    QAction* m_loadAction { nullptr };
-    bool m_isLoading;
+    Infos m_infos;
 
-    CollectionPrivate(Collection* ptr) : q_ptr(ptr) {
-        setupActions();
-    }
+    CollectionPrivate(Collection* ptr) : q_ptr(ptr) {}
 
     void clear() {
-        qDeleteAll(m_folders);
-        m_folders.clear();
+        qDeleteAll(m_infos);
+        m_infos.clear();
     }
 
-    void setupActions() {
-        using namespace ui;
-
-        auto action = new QAction;
-        action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5D5", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
-        action->setToolTip(tr("Sync tutorial folders"));
-        action->setCheckable(true);
-        connect(action, &QAction::toggled, this, &CollectionPrivate::onLoadActionToggled);
-        m_loadAction = action;
-        m_actions.append(m_loadAction);
-    }
-
-    void setup(const QVector<FolderInfo*>& infos) {
-        Q_Q(Collection);
-
+    void setup(const Infos& infos) {
         clear();
 
         for(auto info: infos) {
-            auto item = new Folder(this);
-            m_folders.append(item);
-            connect(item, &Folder::loaded, q, &Collection::loaded);
-            item->setup(info);
-        }
-    }
-
-    void load() {
-        m_loadAction->setChecked(true);
-    }
-
-    void onLoadActionToggled(bool toggled) {
-        if (toggled) {
-            startLoad();
-        } else {
-            cancelLoad();
+            auto i = new FolderInfo(this);
+            *i = *info;
+            m_infos << i;
         }
     }
 
     void startLoad() {
-        if (m_isLoading) {
+        Q_Q(Collection);
+        static LoaderThread* loader { nullptr };
+
+        if (loader) {
             qWarning() << "collection already loading; ignoring start load request...";
             return;
         }
 
-        m_isLoading = true;
+        loader = new LoaderThread(q, m_infos);
+        connect(loader, &LoaderThread::finished, [=](){
+            loader->deleteLater();
+            loader = nullptr;
+        });
+        connect(loader, &LoaderThread::debug, this, [](QString message){ qDebug().noquote() << message; });
+        connect(loader, &LoaderThread::info, this, [](QString message){ qInfo().noquote() << message; });
+        connect(loader, &LoaderThread::warning, this, [](QString message){ qWarning().noquote() << message; });
 
-        qDebug() << "collection: start load";
-
-        for(auto folder: m_folders) {
-            folder->load();
-        }
-    }
-
-    void cancelLoad() {
-        if (!m_isLoading) {
-            qWarning() << "collection isn't loading; ignoring cancel load request...";
-            return;
-        }
-
-        m_isLoading = false;
-
-        qDebug() << "collection: cancel load";
+        QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
     }
 };
 
@@ -110,17 +207,13 @@ void Collection::setup(const QVector<FolderInfo *> &infos)
     d->setup(infos);
 }
 
-void Collection::load()
+void Collection::startLoad()
 {
     Q_D(Collection);
-    d->load();
-}
-
-QList<QAction *> Collection::actions() const
-{
-    Q_D(const Collection);
-    return d->m_actions;
+    d->startLoad();
 }
 
 } // namespace folders
 } // namespace tc
+
+#include "collection.moc"

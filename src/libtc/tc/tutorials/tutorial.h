@@ -8,14 +8,14 @@
 namespace tc {
 namespace tutorials {
 
-class Folder;
+class FolderInfo;
 
 class LIBTCSHARED_EXPORT Tutorial : public QObject
 {
     Q_OBJECT
 
-    QML_WRITABLE_VAR_PROPERTY(tc::tutorials::Folder*, folder) // folder that owns this tutorial
-    QML_WRITABLE_VAR_PROPERTY(int, tableId)         // an ID to identify the tutorial in the cache (it's id/rowid value)
+    QML_WRITABLE_VAR_PROPERTY(tc::tutorials::FolderInfo*, folderInfo)
+    QML_WRITABLE_VAR_PROPERTY(int, index)           // an ID to identify the tutorial in the cache (it's id/rowid value)
 
     QML_WRITABLE_VAR_PROPERTY(bool, isCached)
     QML_WRITABLE_VAR_PROPERTY(bool, isReadOnly)
@@ -33,7 +33,7 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(bool, isViewed)       // true: you have viewed this tutorial
     QML_WRITABLE_VAR_PROPERTY(bool, isDeleted)      // true: you've had this tutorial, but deleted its files (except info*, image* and cover*)
     QML_WRITABLE_VAR_PROPERTY(bool, isOnline)       // true: this was never stored locally - all info is online
-    QML_WRITABLE_VAR_PROPERTY(bool, noBackup)     // true: this tutorial isn't backed up
+    QML_WRITABLE_VAR_PROPERTY(bool, noBackup)       // true: this tutorial isn't backed up
     QML_WRITABLE_VAR_PROPERTY(int, duration)        // total tutorial duration, in minutes
     QML_WRITABLE_VAR_PROPERTY(int, rating)          // -5 .. +5: your rating
     QML_WRITABLE_VAR_PROPERTY(qint64, size)         // total size on disk (in kB)
