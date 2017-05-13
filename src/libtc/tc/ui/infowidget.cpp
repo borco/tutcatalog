@@ -16,6 +16,8 @@
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
 
+#include <markdowncxx.h>
+
 namespace tc {
 namespace ui {
 
@@ -82,7 +84,9 @@ class InfoWidgetPrivate : public QObject
                     zip.setCurrentFile(InfoName);
                     QuaZipFile file(&zip);
                     file.open(QIODevice::ReadOnly);
-                    text += "<br>" + file.readAll();
+                    std::string html;
+                    markdown2html(file.readAll().toStdString(), html);
+                    text += "<br>" + QString::fromStdString(html);
                     file.close();
                 }
                 zip.close();
