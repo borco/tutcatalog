@@ -21,17 +21,12 @@ public:
     void setup(const FolderInfo* info);
     void load();
 
-    void startRefresh();
-    void cancelRefresh();
-
     const FolderInfo* info() const;
-    bool isRefreshing() const;
 
     bool noBackup(const Tutorial* tutorial) const;
 
 signals:
     void loaded(Tutorial* tutorial);
-    void refreshed(int total, int progress);
 
 private:
     Q_DECLARE_PRIVATE(Folder)

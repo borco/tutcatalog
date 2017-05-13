@@ -15,9 +15,8 @@ class FolderPrivate : public QObject
     Q_DECLARE_PUBLIC(Folder)
     Folder* const q_ptr { nullptr };
     FolderInfo m_info;
-    bool m_isRefreshing;
 
-    FolderPrivate(Folder* ptr) : q_ptr(ptr) {}
+    explicit FolderPrivate(Folder* ptr) : q_ptr(ptr) {}
 
     void setup(const FolderInfo* info) {
         if (info) {
@@ -125,14 +124,6 @@ class FolderPrivate : public QObject
     void load() {
         qDebug() << "- tutorial folder - load:" << m_info.name();
     }
-
-    void startRefresh() {
-        // TODO: startRefresh
-    }
-
-    void cancelRefresh() {
-        // TODO: cancelRefresh
-    }
 };
 
 Folder::Folder(QObject *parent)
@@ -161,24 +152,6 @@ const FolderInfo *Folder::info() const
 {
     Q_D(const Folder);
     return &d->m_info;
-}
-
-void Folder::startRefresh()
-{
-    Q_D(Folder);
-    d->startRefresh();
-}
-
-void Folder::cancelRefresh()
-{
-    Q_D(Folder);
-    d->cancelRefresh();
-}
-
-bool Folder::isRefreshing() const
-{
-    Q_D(const Folder);
-    return d->m_isRefreshing;
 }
 
 bool Folder::noBackup(const tutorials::Tutorial *tutorial) const
