@@ -12,7 +12,6 @@
 #include "tc/ui/tutorialswidget.h"
 
 #include "tc/tutorials/collection.h"
-#include "tc/tutorials/folder.h"
 #include "tc/tutorials/folderinfo.h"
 #include "tc/tutorials/model.h"
 #include "tc/tutorials/proxymodel.h"
