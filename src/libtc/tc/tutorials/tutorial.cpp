@@ -14,8 +14,8 @@ namespace tutorials {
 
 Tutorial::Tutorial(QObject *parent)
     : QObject(parent)
-    , m_folder(nullptr)
-    , m_tableId(InvalidTableId)
+    , m_folderInfo(nullptr)
+    , m_index(InvalidTableId)
     , m_isCached(true)
     , m_isReadOnly(true)
     , m_hasInfo(false)

@@ -32,8 +32,6 @@ add_library(libtc SHARED
 
     tc/tutorials/collection.cpp
     tc/tutorials/collection.h
-    tc/tutorials/folder.cpp
-    tc/tutorials/folder.h
     tc/tutorials/folderinfo.cpp
     tc/tutorials/folderinfo.h
     tc/tutorials/tutorial.cpp

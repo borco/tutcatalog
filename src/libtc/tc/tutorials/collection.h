@@ -8,7 +8,6 @@ class QAction;
 namespace tc {
 namespace tutorials {
 
-class Folder;
 class FolderInfo;
 class Tutorial;
 
