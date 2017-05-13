@@ -4,4 +4,3 @@ macro(add_libtc_qtest foo)
 endmacro()
 
 add_libtc_qtest(test-project)
-add_libtc_qtest(test-tutorialfolder)
