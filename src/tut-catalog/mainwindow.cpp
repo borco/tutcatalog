@@ -8,6 +8,7 @@
 #include "tc/ui/labeledvalue.h"
 #include "tc/ui/logwidget.h"
 #include "tc/ui/dockwidget.h"
+#include "tc/ui/infowidget.h"
 #include "tc/ui/theme.h"
 #include "tc/ui/tutorialswidget.h"
 
@@ -78,6 +79,11 @@ void MainWindow::setupUi()
     m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
 
     setupStatusBar();
+
+    auto infoWidget = new InfoWidget(this);
+    setCentralWidget(infoWidget);
+
+    connect(m_tutorialsWidget, &tc::ui::TutorialsWidget::selectionChanged, infoWidget, &tc::ui::InfoWidget::onSelectionChanged);
 }
 
 void MainWindow::setupStatusBar()
