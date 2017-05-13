@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 
 #include <quazip/quazip.h>
+#include <quazip/quazipfile.h>
 
 namespace tc {
 namespace ui {
@@ -73,10 +74,20 @@ class InfoWidgetPrivate : public QObject
             QBuffer buffer(&rawInfo);
             QuaZip zip(&buffer);
 
-            if (!zip.open(QuaZip::mdUnzip)) {
-                qWarning() << "couldn't open info buffer";
+            if (zip.open(QuaZip::mdUnzip)) {
+                QStringList fileNames = zip.getFileNameList();
+                text += "<br>Contents:<br>" + fileNames.join("<br>");
+                const QString InfoName = "info.tc";
+                if (fileNames.contains(InfoName)) {
+                    zip.setCurrentFile(InfoName);
+                    QuaZipFile file(&zip);
+                    file.open(QIODevice::ReadOnly);
+                    text += "<br>" + file.readAll();
+                    file.close();
+                }
+                zip.close();
             } else {
-                text += "<br>Contents:<br>" + zip.getFileNameList().join("<br>");
+                qWarning() << "couldn't open info buffer";
             }
         }
 
