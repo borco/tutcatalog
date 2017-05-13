@@ -22,7 +22,7 @@ public:
     ~Collection();
 
     void setup(const QVector<FolderInfo*>& infos);
-    void load();
+    void startLoad();
 
     QList<QAction*> actions() const;
 

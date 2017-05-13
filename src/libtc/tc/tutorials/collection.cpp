@@ -110,7 +110,7 @@ void Collection::setup(const QVector<FolderInfo *> &infos)
     d->setup(infos);
 }
 
-void Collection::load()
+void Collection::startLoad()
 {
     Q_D(Collection);
     d->load();
