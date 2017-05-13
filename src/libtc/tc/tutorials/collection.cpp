@@ -10,44 +10,50 @@
 #include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QTextCursor>
+#include <QThread>
+#include <QTimer>
 
 namespace tc {
 namespace tutorials {
 
-class CollectionPrivate : public QObject
+typedef QVector<FolderInfo*> Infos;
+
+class LoaderThread : public QThread
 {
-    Q_DECLARE_PUBLIC(Collection)
-    Collection* const q_ptr { nullptr };
-    QVector<FolderInfo*> m_infos;
+    Q_OBJECT
 
-    CollectionPrivate(Collection* ptr) : q_ptr(ptr) {}
+public:
+    explicit LoaderThread(Collection* collection, Infos& infos)
+        : m_infos(infos)
+        , m_collection(collection) {}
 
-    void clear() {
-        qDeleteAll(m_infos);
-        m_infos.clear();
+signals:
+    void warning(QString message);
+    void info(QString message);
+    void debug(QString message);
+
+private:
+    void run() override {
+        QTime t;
+        t.start();
+
+        for(auto info: m_infos) {
+            loadCache(info);
+        }
+
+        emit info(QString("finished loading data in %1 sec").arg(t.elapsed() / 1000., 0, 'f', 2));
     }
 
     QString absolutePath(const QString& path) const {
         return path.isEmpty() ? path : QDir(path).absolutePath();
     }
 
-    void setup(const QVector<FolderInfo*>& infos) {
-        clear();
-
-        for(auto info: infos) {
-            auto i = new FolderInfo(this);
-            *i = *info;
-            m_infos << i;
-        }
-    }
-
     void loadCache(FolderInfo* info) {
-        Q_Q(Collection);
-
         auto db = QSqlDatabase::database();
         db.setDatabaseName(info->cachePath());
         if (!db.open()) {
-            qWarning() << "can't open cache file:" << info->cachePath();
+            emit warning(QString("can't open cache file: \"%1\"").arg(info->cachePath()));
             return;
         }
 
@@ -113,36 +119,75 @@ class CollectionPrivate : public QObject
             t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
 
-            emit q->loaded(t);
+            t->moveToThread(m_collection->thread());
 
-            if (t->parent() == nullptr) {
-                qWarning() << "deleting unwanted tutorial" << t->title();
-                t->deleteLater();
-            }
+            emit m_collection->loaded(t);
+
+            /*
+             * NOTE: allow the GUI thread to do some redrawing
+             * - the frequency and duration where determined by trial and error
+             * - this can be probably be removed if a better way is found
+             *   that allows both fast loading for the data and UI refreshes
+             */
+            if (count % 10 == 0) usleep(1);
+
+//            if (t->parent() == nullptr) {
+//                qWarning() << "deleting unwanted tutorial" << t->title();
+//                t->deleteLater();
+//            }
         }
 
-        qDebug() << "  loaded" << count << "tutorials from cache";
-
         db.close();
+
+        emit debug(QString("  loaded %1 tutorials from cache: \"%2\"").arg(count).arg(info->cachePath()));
+    }
+
+    Infos& m_infos;
+    Collection* m_collection;
+};
+
+class CollectionPrivate : public QObject
+{
+    Q_DECLARE_PUBLIC(Collection)
+    Collection* const q_ptr { nullptr };
+    Infos m_infos;
+
+    CollectionPrivate(Collection* ptr) : q_ptr(ptr) {}
+
+    void clear() {
+        qDeleteAll(m_infos);
+        m_infos.clear();
+    }
+
+    void setup(const Infos& infos) {
+        clear();
+
+        for(auto info: infos) {
+            auto i = new FolderInfo(this);
+            *i = *info;
+            m_infos << i;
+        }
     }
 
     void startLoad() {
-        static bool isLoading { false };
+        Q_Q(Collection);
+        static LoaderThread* loader { nullptr };
 
-        if (isLoading) {
+        if (loader) {
             qWarning() << "collection already loading; ignoring start load request...";
             return;
         }
 
-        isLoading = true;
+        loader = new LoaderThread(q, m_infos);
+        connect(loader, &LoaderThread::finished, [=](){
+            loader->deleteLater();
+            loader = nullptr;
+        });
+        connect(loader, &LoaderThread::debug, this, [](QString message){ qDebug().noquote() << message; });
+        connect(loader, &LoaderThread::info, this, [](QString message){ qInfo().noquote() << message; });
+        connect(loader, &LoaderThread::warning, this, [](QString message){ qWarning().noquote() << message; });
 
-        qDebug() << "collection: start load";
-
-        for(auto info: m_infos) {
-            loadCache(info);
-        }
-
-        isLoading = false;
+        QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
     }
 };
 
@@ -170,3 +215,5 @@ void Collection::startLoad()
 
 } // namespace folders
 } // namespace tc
+
+#include "collection.moc"
