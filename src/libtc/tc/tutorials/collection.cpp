@@ -17,7 +17,6 @@ class CollectionPrivate : public QObject
     Q_DECLARE_PUBLIC(Collection)
     Collection* const q_ptr { nullptr };
     QVector<Folder*> m_folders;
-    QList<QAction*> m_actions;
 
     CollectionPrivate(Collection* ptr) : q_ptr(ptr) {}
 
@@ -79,12 +78,6 @@ void Collection::startLoad()
 {
     Q_D(Collection);
     d->startLoad();
-}
-
-QList<QAction *> Collection::actions() const
-{
-    Q_D(const Collection);
-    return d->m_actions;
 }
 
 } // namespace folders

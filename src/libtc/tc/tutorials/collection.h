@@ -24,8 +24,6 @@ public:
     void setup(const QVector<FolderInfo*>& infos);
     void startLoad();
 
-    QList<QAction*> actions() const;
-
 signals:
     void loaded(tutorials::Tutorial* tutorial);
 
