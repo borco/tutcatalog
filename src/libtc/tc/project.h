@@ -7,7 +7,7 @@
 
 namespace tc {
 
-namespace folders {
+namespace tutorials {
 class FolderInfo;
 }
 
@@ -16,7 +16,7 @@ class LIBTCSHARED_EXPORT Project : public QObject
 {
     Q_OBJECT
 
-    QML_WRITABLE_VAR_PROPERTY(QVector<tc::folders::FolderInfo*>, folderInfos)
+    QML_WRITABLE_VAR_PROPERTY(QVector<tc::tutorials::FolderInfo*>, folderInfos)
     QML_WRITABLE_VAR_PROPERTY(QStringList, videoExtensions)
     QML_WRITABLE_VAR_PROPERTY(QString, ffprobePath)
     QML_WRITABLE_VAR_PROPERTY(QString, scrapScriptPath)

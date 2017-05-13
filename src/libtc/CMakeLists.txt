@@ -13,13 +13,6 @@ add_library(libtc SHARED
     tc/settings.cpp
     tc/settings.h
 
-    tc/folders/collection.cpp
-    tc/folders/collection.h
-    tc/folders/folder.cpp
-    tc/folders/folder.h
-    tc/folders/folderinfo.cpp
-    tc/folders/folderinfo.h
-
     tc/ui/action.h
     tc/ui/delegates.cpp
     tc/ui/delegates.h
@@ -37,6 +30,12 @@ add_library(libtc SHARED
     tc/ui/tutorialswidget.cpp
     tc/ui/tutorialswidget.h
 
+    tc/tutorials/collection.cpp
+    tc/tutorials/collection.h
+    tc/tutorials/folder.cpp
+    tc/tutorials/folder.h
+    tc/tutorials/folderinfo.cpp
+    tc/tutorials/folderinfo.h
     tc/tutorials/tutorial.cpp
     tc/tutorials/tutorial.h
     tc/tutorials/model.cpp

@@ -1,5 +1,5 @@
 #include "project.h"
-#include "folders/folderinfo.h"
+#include "tutorials/folderinfo.h"
 
 #include <QDir>
 #include <QFile>
@@ -26,8 +26,8 @@ class ProjectPrivate
         return path.isEmpty() ? path : QDir(path).absolutePath();
     }
 
-    folders::FolderInfo* getFolderInfo(const YAML::Node& node) const {
-        auto info = new folders::FolderInfo;
+    tutorials::FolderInfo* getFolderInfo(const YAML::Node& node) const {
+        auto info = new tutorials::FolderInfo;
         info->set_name(getString(node, "name"));
         info->set_withCopies(getString(node, "with copies", "no").compare("yes", Qt::CaseInsensitive) == 0);
 

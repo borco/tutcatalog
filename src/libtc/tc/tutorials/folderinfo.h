@@ -4,7 +4,7 @@
 #include "QQmlVarPropertyHelpers.h"
 
 namespace tc {
-namespace folders {
+namespace tutorials {
 
 class LIBTCSHARED_EXPORT FolderInfo : public QObject
 {
@@ -47,5 +47,5 @@ public:
     bool operator==(const FolderInfo& other) const;
 };
 
-} // namespace folders
+} // namespace tutorials
 } // namespace tc

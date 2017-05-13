@@ -6,15 +6,11 @@
 class QAction;
 
 namespace tc {
-
 namespace tutorials {
-class Tutorial;
-}
-
-namespace folders {
 
 class Folder;
 class FolderInfo;
+class Tutorial;
 
 class CollectionPrivate;
 class LIBTCSHARED_EXPORT Collection : public QObject
@@ -38,5 +34,5 @@ private:
     QScopedPointer<CollectionPrivate> const d_ptr;
 };
 
-} // namespace folders
+} // namespace tutorials
 } // namespace tc

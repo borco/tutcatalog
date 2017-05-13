@@ -1,17 +1,16 @@
 #include "collection.h"
 #include "folder.h"
 #include "folderinfo.h"
+#include "tutorial.h"
 
 #include "tc/ui/pixmap.h"
 #include "tc/ui/theme.h"
-
-#include "tc/tutorials/tutorial.h"
 
 #include <QAction>
 #include <QDebug>
 
 namespace tc {
-namespace folders {
+namespace tutorials {
 
 class CollectionPrivate : public QObject
 {

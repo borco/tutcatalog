@@ -1,10 +1,10 @@
 #include <QtTest>
 
 #include "tc/project.h"
-#include "tc/folders/folderinfo.h"
+#include "tc/tutorials/folderinfo.h"
 
 using namespace tc;
-using namespace tc::folders;
+using namespace tc::tutorials;
 
 class Test : public QObject
 {

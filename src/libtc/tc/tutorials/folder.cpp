@@ -1,7 +1,6 @@
 #include "folder.h"
 #include "folderinfo.h"
-
-#include "tc/tutorials/tutorial.h"
+#include "tutorial.h"
 
 #include <QDebug>
 #include <QDir>
@@ -9,7 +8,7 @@
 #include <QSqlQuery>
 
 namespace tc {
-namespace folders {
+namespace tutorials {
 
 class FolderPrivate : public QObject
 {
@@ -190,5 +189,5 @@ bool Folder::noBackup(const tutorials::Tutorial *tutorial) const
     return !noBackupPath.isEmpty() && currentPath.startsWith(noBackupPath);
 }
 
-} // namespace folders
+} // namespace tutorials
 } // namespace tc

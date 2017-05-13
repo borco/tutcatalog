@@ -1,7 +1,7 @@
 #include "folderinfo.h"
 
 namespace tc {
-namespace folders {
+namespace tutorials {
 
 FolderInfo::FolderInfo(QObject *parent)
     : QObject(parent)
@@ -40,5 +40,5 @@ bool FolderInfo::operator==(const FolderInfo &other) const
             && m_withCopies == other.m_withCopies;
 }
 
-} // namespace folders
+} // namespace tutorials
 } // namespace tc

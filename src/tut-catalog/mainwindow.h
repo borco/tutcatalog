@@ -13,11 +13,8 @@ namespace tc {
 
 class Persistent;
 
-namespace folders {
-class Collection;
-}
-
 namespace tutorials {
+class Collection;
 class Model;
 class ProxyModel;
 }
@@ -50,6 +47,6 @@ private:
     QVector<tc::Persistent*> m_persistents;
 
     tc::tutorials::Model* m_tutorials { nullptr };
-    tc::folders::Collection* m_folders { nullptr };
+    tc::tutorials::Collection* m_folders { nullptr };
     tc::ui::TutorialsWidget* m_tutorialsWidget { nullptr };
 };

@@ -6,18 +6,15 @@
 #include <QDateTime>
 
 namespace tc {
-
-namespace folders {
-class Folder;
-}
-
 namespace tutorials {
+
+class Folder;
 
 class LIBTCSHARED_EXPORT Tutorial : public QObject
 {
     Q_OBJECT
 
-    QML_WRITABLE_VAR_PROPERTY(tc::folders::Folder*, folder) // folder that owns this tutorial
+    QML_WRITABLE_VAR_PROPERTY(tc::tutorials::Folder*, folder) // folder that owns this tutorial
     QML_WRITABLE_VAR_PROPERTY(int, tableId)         // an ID to identify the tutorial in the cache (it's id/rowid value)
 
     QML_WRITABLE_VAR_PROPERTY(bool, isCached)

@@ -4,14 +4,10 @@
 #include <QObject>
 
 namespace tc {
-
 namespace tutorials {
-class Tutorial;
-}
-
-namespace folders {
 
 class FolderInfo;
+class Tutorial;
 
 class FolderPrivate;
 class LIBTCSHARED_EXPORT Folder : public QObject
@@ -31,10 +27,10 @@ public:
     const FolderInfo* info() const;
     bool isRefreshing() const;
 
-    bool noBackup(const tutorials::Tutorial* tutorial) const;
+    bool noBackup(const Tutorial* tutorial) const;
 
 signals:
-    void loaded(tutorials::Tutorial* tutorial);
+    void loaded(Tutorial* tutorial);
     void refreshed(int total, int progress);
 
 private:
@@ -42,5 +38,5 @@ private:
     QScopedPointer<FolderPrivate> const d_ptr;
 };
 
-} // namespace folders
+} // namespace tutorials
 } // namespace tc

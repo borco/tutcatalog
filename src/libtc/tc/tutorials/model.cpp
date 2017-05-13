@@ -1,6 +1,6 @@
 #include "model.h"
 #include "tutorial.h"
-#include "tc/folders/folder.h"
+
 #include "tc/ui/theme.h"
 
 #include <QBrush>

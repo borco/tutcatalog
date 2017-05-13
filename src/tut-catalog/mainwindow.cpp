@@ -5,16 +5,15 @@
 #include "tc/project.h"
 #include "tc/settings.h"
 
-#include "tc/folders/collection.h"
-#include "tc/folders/folder.h"
-#include "tc/folders/folderinfo.h"
-
 #include "tc/ui/labeledvalue.h"
 #include "tc/ui/logwidget.h"
 #include "tc/ui/dockwidget.h"
 #include "tc/ui/theme.h"
 #include "tc/ui/tutorialswidget.h"
 
+#include "tc/tutorials/collection.h"
+#include "tc/tutorials/folder.h"
+#include "tc/tutorials/folderinfo.h"
 #include "tc/tutorials/model.h"
 #include "tc/tutorials/proxymodel.h"
 #include "tc/tutorials/tutorial.h"
@@ -34,9 +33,9 @@ MainWindow::MainWindow(const QCommandLineParser &parser, QWidget *parent)
     : QMainWindow(parent)
     , m_ui(new Ui::MainWindow)
     , m_tutorials(new tc::tutorials::Model(this))
-    , m_folders(new tc::folders::Collection(this))
+    , m_folders(new tc::tutorials::Collection(this))
 {
-    connect(m_folders, &tc::folders::Collection::loaded, m_tutorials, &tc::tutorials::Model::append);
+    connect(m_folders, &tc::tutorials::Collection::loaded, m_tutorials, &tc::tutorials::Model::append);
 
     setupUi();
     processCommandLineOption(parser);
