@@ -1,6 +1,7 @@
 [requires]
 yaml-cpp/latest@signal9/stable
 QScintilla2/2.10@iborco/stable
+quazip/0.7.3@iborco/stable
 
 [generators]
 cmake
