@@ -9,7 +9,7 @@ import datetime
 image1 = "image1.png"
 image2 = "image2.png"
 
-text1 = """[image](image1.png)
+text1 = """![image](image1.png)
 
 ## INFO 1
  
@@ -28,7 +28,7 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et """
 
 text3 = """
-[image](image1.png)
+![image](image1.png)
 
 ## INFO 3
 
@@ -40,7 +40,7 @@ text3 = """
 * Nulla consequat massa quis enim.
 * Donec pede justo, fringilla vel, aliquet nec, vulputate 
 
-[image](image2.png)
+![image](image2.png)
 
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
 
