@@ -1,4 +1,6 @@
 #include "infowidget.h"
+
+#include "cachedtextedit.h"
 #include "pixmap.h"
 #include "theme.h"
 
@@ -14,6 +16,7 @@
 #include <QVBoxLayout>
 
 #include <markdowncxx.h>
+#include <iostream>
 
 namespace tc {
 namespace ui {
@@ -26,6 +29,7 @@ class InfoWidgetPrivate : public QObject
     QWidget* m_singleSelectionPage { nullptr };
     QWidget* m_multipleSelectionPage { nullptr };
     QTextEdit* m_edit { nullptr };
+    CachedTextEdit* m_infoView { nullptr };
     QStackedWidget* m_stackedWidget { nullptr };
 
     explicit InfoWidgetPrivate(InfoWidget* ptr) : q_ptr(ptr) {
@@ -46,10 +50,22 @@ class InfoWidgetPrivate : public QObject
         label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         m_multipleSelectionPage = label;
 
+        auto viewWidget = new QWidget;
         m_edit = new QTextEdit;
         m_edit->setReadOnly(true);
         m_edit->setFrameStyle(QFrame::NoFrame);
-        m_singleSelectionPage = m_edit;
+
+        m_infoView = new CachedTextEdit;
+        m_infoView->setReadOnly(true);
+        m_infoView->setFrameStyle(QFrame::NoFrame);
+
+        auto viewLayout = new QVBoxLayout;
+        viewLayout->setMargin(0);
+        viewLayout->addWidget(m_edit);
+        viewLayout->addWidget(m_infoView);
+        viewWidget->setLayout(viewLayout);
+
+        m_singleSelectionPage = viewWidget;
 
         m_stackedWidget->addWidget(m_noSelectionPage);
         m_stackedWidget->addWidget(m_singleSelectionPage);
@@ -76,8 +92,11 @@ class InfoWidgetPrivate : public QObject
             if (files.contains(InfoTc)) {
                 std::string html;
                 markdown2html(files[InfoTc].toStdString(), html);
-                text += "<br>" + QString::fromStdString(html);
+                m_infoView->setCachedResources(files);
+                m_infoView->setText(QString::fromStdString(html));
             }
+        } else {
+            m_infoView->setText("");
         }
 
         m_edit->setText(text);
