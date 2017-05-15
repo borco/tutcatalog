@@ -15,9 +15,9 @@
 #define HAVE_PWD_H 1
 #define HAVE_GETPWUID 1
 #define HAVE_SRANDOM 1
-#define INITRNG(x) srandom((unsigned int)x)
+#define INITRNG(x) srand((unsigned int)x)
 #define HAVE_RANDOM 1
-#define COINTOSS() (random()&1)
+#define COINTOSS() (rand()&1)
 #define HAVE_STRCASECMP 1
 #define HAVE_STRNCASECMP 1
 #define HAVE_FCHDIR 1

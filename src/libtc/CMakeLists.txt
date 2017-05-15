@@ -14,11 +14,15 @@ add_library(libtc SHARED
     tc/settings.h
 
     tc/ui/action.h
+    tc/ui/cachedtextedit.cpp
+    tc/ui/cachedtextedit.h
     tc/ui/delegates.cpp
     tc/ui/delegates.h
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
+    tc/ui/infowidget.cpp
+    tc/ui/infowidget.h
     tc/ui/labeledvalue.cpp
     tc/ui/labeledvalue.h
     tc/ui/logwidget.cpp

@@ -64,6 +64,8 @@ class TutorialsWidgetPrivate : public QObject
         m_view->setItemDelegateForColumn(tutorials::Model::Size, new FileSizeDelegate(this));
         m_view->setItemDelegateForColumn(tutorials::Model::Duration, new DurationDelegate(this));
 
+        connect(m_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, onSelectionChanged);
+
         auto layout = new QVBoxLayout;
         layout->setMargin(0);
         layout->setSpacing(0);
@@ -81,6 +83,20 @@ class TutorialsWidgetPrivate : public QObject
         action->setMenu(m_hideColumnsMenu);
 
         m_dockToolBarAction.append(action);
+    }
+
+    QSet<tutorials::Tutorial*> selectedTutorials() const {
+        QSet<tutorials::Tutorial*> selection;
+        foreach (QModelIndex index, m_view->selectionModel()->selectedIndexes()) {
+            int row = m_proxyModel->mapToSource(index).row();
+            selection << m_model->tutorial(row);
+        }
+        return selection;
+    }
+
+    void onSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/) {
+        Q_Q(TutorialsWidget);
+        q->update_selection(selectedTutorials());
     }
 
     void setModel(tutorials::Model* model) {

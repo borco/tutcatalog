@@ -3,14 +3,13 @@
 import argparse
 import sqlite3
 import os
-import zipfile
 import io
 import datetime
 
 image1 = "image1.png"
 image2 = "image2.png"
 
-text1 = """[image](image1.png)
+text1 = """![image](image1.png)
 
 ## INFO 1
  
@@ -29,7 +28,7 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et """
 
 text3 = """
-[image](image1.png)
+![image](image1.png)
 
 ## INFO 3
 
@@ -41,7 +40,7 @@ text3 = """
 * Nulla consequat massa quis enim.
 * Donec pede justo, fringilla vel, aliquet nec, vulputate 
 
-[image](image2.png)
+![image](image2.png)
 
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.
 
@@ -50,15 +49,15 @@ Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nasc
 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate
 """
 
-class TutorialBlob:
+class Files:
     def __init__(self, info, images = []):
         self.info = info
         self.images = images
 
-blobs = [
-    TutorialBlob(text1, [image1]),
-    TutorialBlob(text2),
-    TutorialBlob(text3, [image1, image2])
+files = [
+    Files(text1, [image1]),
+    Files(text2),
+    Files(text3, [image1, image2])
 ]
 
 parent_paths = [
@@ -144,14 +143,10 @@ def create_database(args):
     conn = sqlite3.connect(args.file)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
-    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, no_backup BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT, info BLOB)")
+    c.execute("DROP TABLE IF EXISTS infos")
+    c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, no_backup BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT)")
+    c.execute("CREATE TABLE infos (id INTEGER PRIMARY KEY, tutorial_id INTEGER, name TEXT, data BLOB)")
     for i in range(args.count):
-        buffer = io.BytesIO()
-        with zipfile.ZipFile(buffer, mode="w") as zf:
-            blob = blobs[i % len(blobs)]
-            zf.writestr("info.tc", blob.info)
-            for img in blob.images:
-                zf.write(img)
         title = "{} {}".format(args.title, i)
         publisher = "Publisher {}".format(i % 3)
         authors = "Author {}".format(i) if i % 5 == 0 else "Author {}, Author {}".format(i % 5, i % 5 + 1)
@@ -178,9 +173,8 @@ def create_database(args):
         lps = learning_paths[i % len(learning_paths)]
         ts = tags[i % len(tags)]
         ets = extra_tags[i % len(extra_tags)]
-        info = buffer.getbuffer()
 
-        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, has_checksum, todo, keep, complete, rating, viewed, deleted, online, no_backup, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags, info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        c.execute("INSERT INTO tutorials (title, publisher, authors, has_info, has_checksum, todo, keep, complete, rating, viewed, deleted, online, no_backup, duration, size, path, levels, created, released, modified, learning_paths, tags, extra_tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 title,
                 publisher,
@@ -205,9 +199,20 @@ def create_database(args):
                 lps,
                 ts,
                 ets,
-                sqlite3.Binary(info) if has_info else None,
                 ]
                 )
+
+        if has_info:
+            tutorial_id = c.lastrowid
+
+            f = files[i % len(files)]
+            c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, "info.tc",  "#" + title + "\n\n" + f.info ])
+
+            for file_name in f.images:
+                with open(file_name, 'rb') as input_file:
+                    blob = input_file.read()
+                    c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, file_name,  sqlite3.Binary(blob) ])
+
     conn.commit()
     conn.close()
 

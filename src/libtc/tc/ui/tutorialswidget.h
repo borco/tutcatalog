@@ -2,10 +2,14 @@
 
 #include "tc/persistent.h"
 #include "dockablewidget.h"
+#include "QQmlVarPropertyHelpers.h"
+
+#include <QSet>
 
 namespace tc {
 
 namespace tutorials {
+class Tutorial;
 class Model;
 class ProxyModel;
 }
@@ -16,6 +20,8 @@ class TutorialsWidgetPrivate;
 class LIBTCSHARED_EXPORT TutorialsWidget: public DockableWidget, public Persistent
 {
     Q_OBJECT
+
+    QML_READONLY_VAR_PROPERTY(QSet<tc::tutorials::Tutorial*>, selection)
 
 public:
     explicit TutorialsWidget(QWidget* parent = nullptr);
