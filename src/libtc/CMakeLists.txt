@@ -58,7 +58,6 @@ target_link_libraries(libtc
     libmarkdown
     libqtqmlmodels
     libqtsupermacros
-    CONAN_PKG::quazip
     CONAN_PKG::QScintilla2
     CONAN_PKG::yaml-cpp
     Qt5::Core

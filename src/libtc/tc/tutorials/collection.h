@@ -17,13 +17,15 @@ class LIBTCSHARED_EXPORT Collection : public QObject
     Q_OBJECT
 
 public:
+    typedef QMap<QString, QByteArray> CachedFiles;
+
     explicit Collection(QObject *parent = nullptr);
     ~Collection();
 
     void setup(const QVector<FolderInfo*>& infos);
     void startLoad();
 
-    QByteArray cachedInfo(const Tutorial* tutorial) const;
+    CachedFiles cachedFiles(const Tutorial* tutorial) const;
 
 signals:
     void loaded(tutorials::Tutorial* tutorial);

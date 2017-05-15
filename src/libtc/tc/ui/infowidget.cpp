@@ -13,9 +13,6 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-#include <quazip/quazip.h>
-#include <quazip/quazipfile.h>
-
 #include <markdowncxx.h>
 
 namespace tc {
@@ -71,28 +68,14 @@ class InfoWidgetPrivate : public QObject
                 .arg(tutorial->title())
                 .arg(tutorial->index());
 
-        QByteArray rawInfo = tutorial->collection()->cachedInfo(tutorial);
-        if (!rawInfo.isEmpty()) {
-            QBuffer buffer(&rawInfo);
-            QuaZip zip(&buffer);
+        const QString InfoTc { "info.tc" };
 
-            if (zip.open(QuaZip::mdUnzip)) {
-                QStringList fileNames = zip.getFileNameList();
-                text += "<br>Contents:<br>" + fileNames.join("<br>");
-                const QString InfoName = "info.tc";
-                if (fileNames.contains(InfoName)) {
-                    zip.setCurrentFile(InfoName);
-                    QuaZipFile file(&zip);
-                    file.open(QIODevice::ReadOnly);
-                    std::string html;
-                    markdown2html(file.readAll().toStdString(), html);
-                    text += "<br>" + QString::fromStdString(html);
-                    file.close();
-                }
-                zip.close();
-            } else {
-                qWarning() << "couldn't open info buffer";
-            }
+        tutorials::Collection::CachedFiles files = tutorial->collection()->cachedFiles(tutorial);
+        text += "<br>Contents:<br>" + files.keys().join("<br>");
+        if (files.contains(InfoTc)) {
+            std::string html;
+            markdown2html(files[InfoTc].toStdString(), html);
+            text += "<br>" + QString::fromStdString(html);
         }
 
         m_edit->setText(text);
