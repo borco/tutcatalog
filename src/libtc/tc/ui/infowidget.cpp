@@ -70,12 +70,14 @@ class InfoWidgetPrivate : public QObject
 
         const QString InfoTc { "info.tc" };
 
-        tutorials::Collection::CachedFiles files = tutorial->collection()->cachedFiles(tutorial);
-        text += "<br>Contents:<br>" + files.keys().join("<br>");
-        if (files.contains(InfoTc)) {
-            std::string html;
-            markdown2html(files[InfoTc].toStdString(), html);
-            text += "<br>" + QString::fromStdString(html);
+        tutorials::Collection::CachedFiles files = tutorial->collection()->cachedInfo(tutorial);
+        if (files.size()) {
+            text += "<br>Contents:<br>" + files.keys().join("<br>");
+            if (files.contains(InfoTc)) {
+                std::string html;
+                markdown2html(files[InfoTc].toStdString(), html);
+                text += "<br>" + QString::fromStdString(html);
+            }
         }
 
         m_edit->setText(text);

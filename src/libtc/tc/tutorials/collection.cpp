@@ -191,7 +191,7 @@ class CollectionPrivate : public QObject
         QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
     }
 
-    Collection::CachedFiles cachedFiles(const Tutorial* tutorial) const {
+    Collection::CachedFiles cachedFiles(const Tutorial* tutorial, const QString& table) const {
         Collection::CachedFiles files;
 
         const FolderInfo* folderInfo = tutorial->folderInfo();
@@ -208,10 +208,10 @@ class CollectionPrivate : public QObject
         }
 
         QSqlQuery query;
-        query.prepare("SELECT name, data FROM files where tutorial_id=:tutorial_id");
+        query.prepare(QString("SELECT name, data FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
         query.bindValue(":tutorial_id", index);
         if (!query.exec()) {
-            qWarning() << "failed to retrieve info";
+            qWarning() << "failed to retrieve cached files from " << table;
             return files;
         }
 
@@ -247,10 +247,10 @@ void Collection::startLoad()
     d->startLoad();
 }
 
-Collection::CachedFiles Collection::cachedFiles(const Tutorial *tutorial) const
+Collection::CachedFiles Collection::cachedInfo(const Tutorial *tutorial) const
 {
     Q_D(const Collection);
-    return d->cachedFiles(tutorial);
+    return d->cachedFiles(tutorial, "infos");
 }
 
 } // namespace folders

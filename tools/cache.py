@@ -143,9 +143,9 @@ def create_database(args):
     conn = sqlite3.connect(args.file)
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
-    c.execute("DROP TABLE IF EXISTS files")
+    c.execute("DROP TABLE IF EXISTS infos")
     c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, no_backup BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT)")
-    c.execute("CREATE TABLE files (id INTEGER PRIMARY KEY, tutorial_id INTEGER, name TEXT, data BLOB)")
+    c.execute("CREATE TABLE infos (id INTEGER PRIMARY KEY, tutorial_id INTEGER, name TEXT, data BLOB)")
     for i in range(args.count):
         title = "{} {}".format(args.title, i)
         publisher = "Publisher {}".format(i % 3)
@@ -202,15 +202,16 @@ def create_database(args):
                 ]
                 )
 
-        tutorial_id = c.lastrowid
+        if has_info:
+            tutorial_id = c.lastrowid
 
-        f = files[i % len(files)]
-        c.execute("INSERT INTO files (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, "info.tc",  "#" + title + "\n\n" + f.info ])
+            f = files[i % len(files)]
+            c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, "info.tc",  "#" + title + "\n\n" + f.info ])
 
-        for file_name in f.images:
-            with open(file_name, 'rb') as input_file:
-                blob = input_file.read()
-                c.execute("INSERT INTO files (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, file_name,  sqlite3.Binary(blob) ])
+            for file_name in f.images:
+                with open(file_name, 'rb') as input_file:
+                    blob = input_file.read()
+                    c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, file_name,  sqlite3.Binary(blob) ])
 
     conn.commit()
     conn.close()

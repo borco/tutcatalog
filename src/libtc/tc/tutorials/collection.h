@@ -25,7 +25,7 @@ public:
     void setup(const QVector<FolderInfo*>& infos);
     void startLoad();
 
-    CachedFiles cachedFiles(const Tutorial* tutorial) const;
+    CachedFiles cachedInfo(const Tutorial* tutorial) const;
 
 signals:
     void loaded(tutorials::Tutorial* tutorial);
