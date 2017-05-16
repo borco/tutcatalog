@@ -84,19 +84,32 @@ class InfoWidgetPrivate : public QObject
                 .arg(tutorial->title())
                 .arg(tutorial->index());
 
-        const QString InfoTc { "info.tc" };
+        if (tutorial->hasInfo()) {
+            auto infos = tutorial->collection()->cachedInfos(tutorial);
+            if (infos.size() == 0) {
+                qWarning() << "info expected but not found in cache";
+            } else if (infos.size() > 1) {
+                qWarning() << "more infos found in cache for the same tutorial";
+            } else {
+                text += "<br>Contents:<br>info.tc<br>";
+                auto images = tutorial->collection()->cachedImages(tutorial);
+                if (images.size()) {
+                    text += images.keys().join("<br>");
+                    CachedTextEdit::CachedResources resources;
+                    for (auto i: images) {
+                        resources[i.name] = i.data;
+                    }
+                    m_infoView->setCachedResources(resources);
+                }
 
-        tutorials::Collection::CachedFiles files = tutorial->collection()->cachedInfo(tutorial);
-        if (files.size()) {
-            text += "<br>Contents:<br>" + files.keys().join("<br>");
-            if (files.contains(InfoTc)) {
+                // NOTE: info html must be set after configuring resources, if any are present
                 std::string html;
-                markdown2html(files[InfoTc].toStdString(), html);
-                m_infoView->setCachedResources(files);
+                markdown2html(infos.first().data.toStdString(), html);
                 m_infoView->setText(QString::fromStdString(html));
             }
         } else {
             m_infoView->setText("");
+            m_infoView->setCachedResources(CachedTextEdit::CachedResources());
         }
 
         m_edit->setText(text);

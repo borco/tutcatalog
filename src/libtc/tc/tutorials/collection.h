@@ -2,6 +2,7 @@
 
 #include "libtc_global.h"
 #include <QObject>
+#include <QDateTime>
 
 class QAction;
 
@@ -17,7 +18,14 @@ class LIBTCSHARED_EXPORT Collection : public QObject
     Q_OBJECT
 
 public:
-    typedef QMap<QString, QByteArray> CachedFiles;
+    struct CachedFile {
+        QString name;
+        QByteArray data;
+        QString checksum; // crc32
+        QDateTime modified;
+    };
+
+    typedef QMap<QString, CachedFile> CachedFiles;
 
     explicit Collection(QObject *parent = nullptr);
     ~Collection();
@@ -25,7 +33,9 @@ public:
     void setup(const QVector<FolderInfo*>& infos);
     void startLoad();
 
-    CachedFiles cachedInfo(const Tutorial* tutorial) const;
+    CachedFiles cachedInfos(const Tutorial* tutorial) const;
+    CachedFiles cachedImages(const Tutorial* tutorial) const;
+    CachedFiles cachedFiles(const Tutorial* tutorial) const;
 
 signals:
     void loaded(tutorials::Tutorial* tutorial);

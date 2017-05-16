@@ -5,7 +5,7 @@ namespace ui {
 
 struct CachedTextEditPrivate
 {
-    QMap<QString, QByteArray> data;
+    CachedTextEdit::CachedResources data;
 };
 
 CachedTextEdit::CachedTextEdit(QWidget *parent)
@@ -29,7 +29,7 @@ QVariant CachedTextEdit::loadResource(int type, const QUrl &name)
     return QTextEdit::loadResource(type, name);
 }
 
-void CachedTextEdit::setCachedResources(const QMap<QString, QByteArray> &data)
+void CachedTextEdit::setCachedResources(const CachedResources &data)
 {
     Q_D(CachedTextEdit);
     d->data = data;

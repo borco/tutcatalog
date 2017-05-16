@@ -208,7 +208,7 @@ class CollectionPrivate : public QObject
         }
 
         QSqlQuery query;
-        query.prepare(QString("SELECT name, data FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
+        query.prepare(QString("SELECT name, data, checksum, modified FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
         query.bindValue(":tutorial_id", index);
         if (!query.exec()) {
             qWarning() << "failed to retrieve cached files from " << table;
@@ -218,7 +218,9 @@ class CollectionPrivate : public QObject
         while (query.next()) {
             QString name = query.value(0).toString();
             QByteArray data = query.value(1).toByteArray();
-            files[name] = data;
+            QString checksum = query.value(2).toString();
+            QDateTime modified = query.value(3).toDateTime();
+            files[name] = { name, data, checksum, modified };
         }
 
         return files;
@@ -247,10 +249,22 @@ void Collection::startLoad()
     d->startLoad();
 }
 
-Collection::CachedFiles Collection::cachedInfo(const Tutorial *tutorial) const
+Collection::CachedFiles Collection::cachedInfos(const Tutorial *tutorial) const
 {
     Q_D(const Collection);
     return d->cachedFiles(tutorial, "infos");
+}
+
+Collection::CachedFiles Collection::cachedImages(const Tutorial *tutorial) const
+{
+    Q_D(const Collection);
+    return d->cachedFiles(tutorial, "images");
+}
+
+Collection::CachedFiles Collection::cachedFiles(const Tutorial *tutorial) const
+{
+    Q_D(const Collection);
+    return d->cachedFiles(tutorial, "files");
 }
 
 } // namespace folders

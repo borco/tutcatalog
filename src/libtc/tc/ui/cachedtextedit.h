@@ -11,12 +11,13 @@ class CachedTextEditPrivate;
 class CachedTextEdit : public QTextEdit
 {
 public:
+    typedef QMap<QString, QByteArray> CachedResources;
     explicit CachedTextEdit(QWidget* parent = nullptr);
     ~CachedTextEdit();
 
     QVariant loadResource(int type, const QUrl &name) override;
 
-    void setCachedResources(const QMap<QString, QByteArray>& data);
+    void setCachedResources(const CachedResources& data);
 
 private:
     Q_DECLARE_PRIVATE(CachedTextEdit)

@@ -5,6 +5,7 @@ import sqlite3
 import os
 import io
 import datetime
+import binascii
 
 image1 = "image1.png"
 image2 = "image2.png"
@@ -137,6 +138,16 @@ extra_tags = [
     None,
 ]
 
+def crcFile(name):
+    with open(name, 'rb') as f:
+        data = f.read()
+        return crc(data)
+    return ""
+
+def crcData(data):
+    crc = binascii.crc32(data)
+    return format(crc, 'x')
+
 def create_database(args):
     print("generating {} tutorials in {}, using tutorial name prefix {}".format(args.count, args.file, args.title))
 
@@ -144,8 +155,12 @@ def create_database(args):
     c = conn.cursor()
     c.execute("DROP TABLE IF EXISTS tutorials")
     c.execute("DROP TABLE IF EXISTS infos")
+    c.execute("DROP TABLE IF EXISTS images")
+    c.execute("DROP TABLE IF EXISTS files")
     c.execute("CREATE TABLE tutorials (id INTEGER PRIMARY KEY, title TEXT, publisher TEXT, authors TEXT, has_info BOOLEAN, has_checksum BOOLEAN, todo BOOLEAN, keep BOOLEAN, complete BOOLEAN, rating INTEGER, viewed BOOLEAN, deleted BOOLEAN, online BOOLEAN, no_backup BOOLEAN, duration TEXT, size INTEGER, path TEXT, levels TEXT, created DATE, released DATE, modified DATE, learning_paths TEXT, tags TEXT, extra_tags TEXT)")
-    c.execute("CREATE TABLE infos (id INTEGER PRIMARY KEY, tutorial_id INTEGER, name TEXT, data BLOB)")
+    c.execute("CREATE TABLE infos (id INTEGER PRIMARY KEY, tutorial_id INTEGER UNIQUE, name TEXT, modified DATE, checksum TEXT, data BLOB)")
+    c.execute("CREATE TABLE images (id INTEGER PRIMARY KEY, tutorial_id INTEGER, name TEXT, modified DATE, checksum TEXT, data BLOB)")
+    c.execute("CREATE TABLE files (id INTEGER PRIMARY KEY, tutorial_id INTEGER UNIQUE, name TEXT, modified DATE, checksum TEXT, data BLOB)")
     for i in range(args.count):
         title = "{} {}".format(args.title, i)
         publisher = "Publisher {}".format(i % 3)
@@ -206,12 +221,18 @@ def create_database(args):
             tutorial_id = c.lastrowid
 
             f = files[i % len(files)]
-            c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, "info.tc",  "#" + title + "\n\n" + f.info ])
+            info_name = "info.tc"
+            info_data = "#" + title + "\n\n" + f.info
+            info_checksum = crcData(info_data.encode())
+            info_modified = modified
+            c.execute("INSERT INTO infos (tutorial_id, name, data, modified, checksum) VALUES (?, ?, ?, ?, ?)", [ tutorial_id,  info_name, info_data, info_modified, info_checksum])
 
-            for file_name in f.images:
-                with open(file_name, 'rb') as input_file:
-                    blob = input_file.read()
-                    c.execute("INSERT INTO infos (tutorial_id, name, data) VALUES (?, ?, ?)", [ tutorial_id, file_name,  sqlite3.Binary(blob) ])
+            for image_name in f.images:
+                image_modified = datetime.datetime.fromtimestamp(os.path.getmtime(image_name))
+                with open(image_name, 'rb') as image_file:
+                    image_data = image_file.read()
+                    image_checksum = crcData(image_data)
+                    c.execute("INSERT INTO images (tutorial_id, name, data, modified, checksum) VALUES (?, ?, ?, ?, ?)", [ tutorial_id, image_name,  sqlite3.Binary(image_data), image_modified, image_checksum ])
 
     conn.commit()
     conn.close()
