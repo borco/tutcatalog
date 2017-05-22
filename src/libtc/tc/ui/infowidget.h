@@ -1,7 +1,7 @@
 #pragma once
 
 #include "libtc_global.h"
-#include "tc/persistent.h"
+#include "dockablewidget.h"
 
 #include <QWidget>
 
@@ -14,11 +14,14 @@ class Tutorial;
 namespace ui {
 
 class InfoWidgetPrivate;
-class LIBTCSHARED_EXPORT InfoWidget: public QWidget
+class LIBTCSHARED_EXPORT InfoWidget: public DockableWidget
 {
 public:
     explicit InfoWidget(QWidget* parent = nullptr);
     ~InfoWidget();
+
+    QList<Action *> dockToolBarActions() const override;
+    QList<Action *> appToolBarActions() const override;
 
     void onSelectionChanged(const QSet<tc::tutorials::Tutorial*>& selection);
 

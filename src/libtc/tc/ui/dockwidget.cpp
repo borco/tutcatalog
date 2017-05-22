@@ -67,6 +67,7 @@ class DockWidgetPrivate: public QObject
 
         q->setTitleBarWidget(tb);
         q->setWindowTitle(title);
+        q->setAllowedAreas(Qt::AllDockWidgetAreas);
 
         // embed the content
         auto container = new QWidget;

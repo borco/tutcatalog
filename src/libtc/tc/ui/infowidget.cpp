@@ -25,6 +25,9 @@ class InfoWidgetPrivate : public QObject
 {
     Q_DECLARE_PUBLIC(InfoWidget)
     InfoWidget* const q_ptr { nullptr };
+    QList<Action*> m_dockToolBarAction;
+    QList<Action*> m_appToolBarAction;
+
     QWidget* m_noSelectionPage { nullptr };
     QWidget* m_singleSelectionPage { nullptr };
     QWidget* m_multipleSelectionPage { nullptr };
@@ -76,6 +79,9 @@ class InfoWidgetPrivate : public QObject
         layout->setSpacing(0);
         layout->addWidget(m_stackedWidget);
         q->setLayout(layout);
+
+        q->setWindowTitle(tr("Info"));
+        q->setWindowIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf27b", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
     }
 
     void updateFromCache(tutorials::Tutorial* tutorial) {
@@ -139,13 +145,25 @@ class InfoWidgetPrivate : public QObject
 };
 
 InfoWidget::InfoWidget(QWidget *parent)
-    : QWidget(parent)
+    : DockableWidget(parent)
     , d_ptr(new InfoWidgetPrivate(this))
 {
 }
 
 InfoWidget::~InfoWidget()
 {
+}
+
+QList<Action *> InfoWidget::dockToolBarActions() const
+{
+    Q_D(const InfoWidget);
+    return d->m_dockToolBarAction;
+}
+
+QList<Action *> InfoWidget::appToolBarActions() const
+{
+    Q_D(const InfoWidget);
+    return d->m_appToolBarAction;
 }
 
 void InfoWidget::onSelectionChanged(const QSet<tutorials::Tutorial*> &selection)

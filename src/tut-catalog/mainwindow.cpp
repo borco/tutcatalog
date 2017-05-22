@@ -57,6 +57,9 @@ void MainWindow::setupUi()
     setWindowTitle(MY_APPLICATION);
 
     // docks
+    centralWidget()->hide();
+    setDockOptions(AllowNestedDocks | AllowTabbedDocks);
+
     auto logWidget = new LogWidget(this);
     auto logDockWidget = new DockWidget(logWidget, this);
     logDockWidget->setObjectName("logDockWidget");
@@ -70,18 +73,21 @@ void MainWindow::setupUi()
     addDockWidget(Qt::LeftDockWidgetArea, tutorialsDockWidget);
     m_persistents << m_tutorialsWidget;
 
+    auto infoWidget = new InfoWidget(this);
+    auto infoDockWidget = new DockWidget(infoWidget, this);
+    infoDockWidget->setObjectName("infoDockWidget");
+    addDockWidget(Qt::LeftDockWidgetArea, infoDockWidget);
+
     // toolbar
     m_ui->toolBar->setStyleSheet(Theme::MainToolBarStyle);
     m_ui->toolBar->setIconSize(QSize(Theme::MainToolBarIconSize,
                                      Theme::MainToolBarIconSize));
 
     m_ui->toolBar->addAction(tutorialsDockWidget->toggleViewAction());
+    m_ui->toolBar->addAction(infoDockWidget->toggleViewAction());
     m_ui->toolBar->addAction(logDockWidget->toggleViewAction());
 
     setupStatusBar();
-
-    auto infoWidget = new InfoWidget(this);
-    setCentralWidget(infoWidget);
 
     connect(m_tutorialsWidget, &tc::ui::TutorialsWidget::selectionChanged, infoWidget, &tc::ui::InfoWidget::onSelectionChanged);
 }
