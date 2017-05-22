@@ -123,6 +123,12 @@ class TutorialsWidgetPrivate : public QObject
         m_hideColumnsMenu->clear();
         m_columns.clear();
 
+        auto showAllAction = new Action;
+        showAllAction->setText(tr("All"));
+        showAllAction->setToolTip(tr("Show all columns"));
+        m_hideColumnsMenu->addAction(showAllAction);
+        m_hideColumnsMenu->addSeparator();
+
         for (int i = 0; i < m_model->columns().size(); ++i) {
             auto text = m_model->columns()[i];
             auto action = new Action;
@@ -132,6 +138,13 @@ class TutorialsWidgetPrivate : public QObject
             connect(action, &QAction::toggled, [=](bool value) { m_view->setColumnHidden(i, !value);} );
             m_columns[text] = { i, action};
         }
+
+        connect(showAllAction, &Action::triggered, [=](){
+            for(auto c: m_columns) {
+                if (!c.hideAction->isChecked())
+                    c.hideAction->setChecked(true);
+            }
+        });
 
         auto keys = m_columns.keys();
         keys.sort();
