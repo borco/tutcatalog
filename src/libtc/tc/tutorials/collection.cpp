@@ -164,8 +164,13 @@ private:
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_url(query.value(++row).toString());
 
-            t->set_info(cachedInfo(t));
-            t->set_images(cachedFiles(t, "images"));
+            if (t->hasInfo()) {
+                t->set_info(cachedInfo(t));
+                t->set_images(cachedFiles(t, "images"));
+            } else {
+                t->set_info(CachedFile());
+                t->set_images(CachedFiles());
+            }
 
             t->moveToThread(m_collection->thread());
 
