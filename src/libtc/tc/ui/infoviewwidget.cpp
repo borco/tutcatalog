@@ -22,6 +22,7 @@ class InfoViewWidgetPrivate : public QObject
     InfoViewWidget* const q_ptr { nullptr };
     Tutorial* m_tutorial { nullptr };
 
+    QLabel* m_isCachedLabel { nullptr };
     QLabel* m_pathLabel { nullptr };
     QLabel* m_canonicalPathLabel { nullptr };
     QLabel* m_parentPathLabel { nullptr };
@@ -62,6 +63,7 @@ class InfoViewWidgetPrivate : public QObject
         formLayout->setMargin(0);
         formLayout->setSpacing(Spacing);
 
+        formLayout->addRow(tr("From cache:"), m_isCachedLabel = new QLabel);
         formLayout->addRow(tr("Tutorial:"), m_pathLabel = new QLabel);
         formLayout->addRow(tr("Canonical:"), m_canonicalPathLabel = new QLabel);
         formLayout->addRow(tr("Location:"), m_parentPathLabel = new QLabel);
@@ -220,6 +222,8 @@ class InfoViewWidgetPrivate : public QObject
         }
 
         m_tutorial = tutorial;
+
+        connectProperty(m_isCachedLabel, &Tutorial::isCached, &Tutorial::isCachedChanged, tr("<font color=\"red\">YES</font>"), tr(""));
 
         connectProperty(m_pathLabel, &Tutorial::path, &Tutorial::pathChanged,
                         [](Tutorial* tutorial, QString v){

@@ -196,7 +196,7 @@ def create_database(args):
         no_backup = i % 5 == 0
         parent_path = parent_paths[i % len(parent_paths)]
         skip_path = skip_paths[i % len(skip_paths)]
-        path = (skip_path if no_backup else parent_path) + "/" + (title if i % 10 != 9 else title + "__")
+        path = (skip_path if no_backup else parent_path) + "/" + (title if i % 5 != 4 else title + "__")
         level = levels[i % len(levels)]
         created = datetime.datetime.now() - datetime.timedelta(minutes = i)
         released = released_dates[i % len(released_dates)]
