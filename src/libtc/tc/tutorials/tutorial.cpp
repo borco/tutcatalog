@@ -1,6 +1,7 @@
 #include "tutorial.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFileInfo>
 
 namespace {
@@ -31,6 +32,8 @@ Tutorial::Tutorial(QObject *parent)
     , m_rating(DefaultRating)
     , m_size(InvalidSize)
 {
+    connect(this, &Tutorial::pathChanged, this, &Tutorial::canonicalPathChanged);
+    connect(this, &Tutorial::titleChanged, this, &Tutorial::canonicalPathChanged);
 }
 
 QString Tutorial::fileSizeAsString(qint64 size)
@@ -75,9 +78,14 @@ QString Tutorial::durationAsString(int duration)
 
 }
 
-bool Tutorial::hasCanonicalName() const
+bool Tutorial::hasCanonicalPath() const
 {
-    return QFileInfo(m_path).fileName() == m_title;
+    return m_path == canonicalPath();
+}
+
+QString Tutorial::canonicalPath() const
+{
+    return QFileInfo(m_path).dir().filePath(m_title);
 }
 
 } // namespace tutorials

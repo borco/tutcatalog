@@ -117,6 +117,18 @@ class InfoViewWidgetPrivate : public QObject
     }
 
     void connectProperty(QLabel* label,
+                         QString (Tutorial::*getter)() const,
+                         void (Tutorial::*notifier)(QString),
+                         QString (*adapter) (Tutorial*, QString)) {
+        if (m_tutorial) {
+            connect(m_tutorial, notifier, this, [=](QString v){ label->setText((*adapter)(m_tutorial, v)); });
+            label->setText((*adapter)(m_tutorial, (m_tutorial->*getter)()));
+        } else {
+            label->clear();
+        }
+    }
+
+    void connectProperty(QLabel* label,
                          QStringList (Tutorial::*getter)() const,
                          void (Tutorial::*notifier)(QStringList)) {
         if (m_tutorial) {
@@ -208,6 +220,15 @@ class InfoViewWidgetPrivate : public QObject
         }
 
         m_tutorial = tutorial;
+
+        connectProperty(m_pathLabel, &Tutorial::path, &Tutorial::pathChanged,
+                        [](Tutorial* tutorial, QString v){
+            return tutorial->hasCanonicalPath() ? v : "<font color=\"red\">" + v + "</font>";
+        });
+        connectProperty(m_canonicalPathLabel, &Tutorial::canonicalPath, &Tutorial::canonicalPathChanged,
+                        [](Tutorial* tutorial, QString) {
+            return tutorial->hasCanonicalPath() ? "" : tutorial->canonicalPath();
+        });
 
         connectProperty(m_titleLabel, &Tutorial::title, &Tutorial::titleChanged);
         connectProperty(m_publisherLabel, &Tutorial::publisher, &Tutorial::publisherChanged);

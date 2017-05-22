@@ -201,7 +201,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
         static const QBrush InfoColor { QColor("#996515") };
         switch(column) {
         case Model::Title: {
-            if (!item->hasCanonicalName())
+            if (!item->hasCanonicalPath())
                 return WarningColor;
             break;
         }

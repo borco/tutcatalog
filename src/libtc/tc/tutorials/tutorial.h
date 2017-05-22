@@ -53,6 +53,8 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(CachedFile, info)
     QML_WRITABLE_VAR_PROPERTY(CachedFiles, images)
 
+    Q_PROPERTY(QString canonicalPath READ canonicalPath NOTIFY canonicalPathChanged)
+
 public:
     static const int InvalidTableId { -1 };
     static const int InvalidSize { -1 };
@@ -64,7 +66,15 @@ public:
     static QString ratingAsString(int rating);
     static QString durationAsString(int duration);
 
-    bool hasCanonicalName() const;
+    bool hasCanonicalPath() const;
+    QString canonicalPath() const;
+
+signals:
+    void canonicalPathChanged(QString canonicalPath);
+
+private:
+
+    QString m_canonicalPath;
 };
 
 } // namespace tutorials
