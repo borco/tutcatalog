@@ -212,15 +212,15 @@ QVariant Model::data(const QModelIndex &index, int role) const
             break;
         }
 
-        case Model::Rating:
-            return item->rating() < 0 ? InfoColor : QVariant();
-
         case Model::IsComplete:
             return WarningColor;
 
-        case Model::IsDeleted:
-        case Model::NoBackup:
-            return InfoColor;
+//        case Model::Rating:
+//            return item->rating() < 0 ? InfoColor : QVariant();
+
+//        case Model::IsDeleted:
+//        case Model::NoBackup:
+//            return InfoColor;
 
         default:
             break;
