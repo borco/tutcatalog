@@ -33,6 +33,7 @@ struct ModelPrivate : public QObject
         tr("Released"),
         tr("No Backup"),
         tr("MB/min"),
+        tr("Cached"),
     };
 
     QVector<Tutorial*> items;
@@ -139,6 +140,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::Modified: return item->modified();
         case Model::Released: return item->released();
         case Model::NoBackup: return item->noBackup() ? "\uf12a" : "";
+        case Model::IsCached: return item->isCached() ? "\uf017" : "";
         case Model::SizeToDuration: {
             static const double MegaByte = 1024 * 1024;
             double ratio = item->size() / (item->duration() * MegaByte);
@@ -159,6 +161,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::IsViewed:
         case Model::IsDeleted:
         case Model::NoBackup:
+        case Model::IsCached:
             return d->m_awesomeFont;
         default:
             break;
@@ -177,6 +180,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
         case Model::IsViewed:
         case Model::IsDeleted:
         case Model::NoBackup:
+        case Model::IsCached:
             return Qt::AlignHCenter;
 
         case Model::Size:
@@ -214,13 +218,6 @@ QVariant Model::data(const QModelIndex &index, int role) const
 
         case Model::IsComplete:
             return WarningColor;
-
-//        case Model::Rating:
-//            return item->rating() < 0 ? InfoColor : QVariant();
-
-//        case Model::IsDeleted:
-//        case Model::NoBackup:
-//            return InfoColor;
 
         default:
             break;

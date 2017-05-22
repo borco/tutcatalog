@@ -36,6 +36,7 @@ public:
         Released,
         NoBackup,
         SizeToDuration,
+        IsCached,
     };
 
     explicit Model(QObject* parent = 0);
