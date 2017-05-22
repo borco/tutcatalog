@@ -65,9 +65,14 @@ QString Tutorial::ratingAsString(int rating)
 
 QString Tutorial::durationAsString(int duration)
 {
-    int mins = duration % 60;
+    int minutes = duration % 60;
     int hours = duration / 60;
-    return QString(tr("%1h %2m").arg(mins, hours));
+    return duration > 0 ? ( hours > 0
+                            ? QString("%1h %2m").arg(hours).arg(minutes)
+                            : QString("%1m").arg(minutes)
+                              )
+                        : "";
+
 }
 
 bool Tutorial::hasCanonicalName() const

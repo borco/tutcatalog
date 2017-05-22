@@ -18,6 +18,7 @@ public:
     QVariant loadResource(int type, const QUrl &name) override;
 
     void setCachedResources(const CachedResources& data);
+    void clear();
 
 private:
     Q_DECLARE_PRIVATE(CachedTextEdit)

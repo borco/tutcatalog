@@ -24,12 +24,7 @@ DurationDelegate::DurationDelegate(QObject *parent)
 
 QString DurationDelegate::displayText(const QVariant &value, const QLocale &) const
 {
-    int v = value.value<int>();
-    int minutes = v % 60;
-    int hours = v / 60;
-    return v > 0 ? ( hours > 0 ? QString("%1h %2m").arg(hours).arg(minutes)
-                               : QString("%1m").arg(minutes))
-                 : "";
+    return tutorials::Tutorial::durationAsString(value.value<int>());
 }
 
 RatingDelegate::RatingDelegate(QObject *parent)

@@ -1,4 +1,6 @@
 #include "collection.h"
+
+#include "cachedfile.h"
 #include "folderinfo.h"
 #include "tutorial.h"
 
@@ -39,7 +41,16 @@ private:
         t.start();
 
         for(auto info: m_infos) {
+            auto db = QSqlDatabase::database();
+            db.setDatabaseName(info->cachePath());
+
+            if (!db.open()) {
+                emit warning(QString("can't open cache file: \"%1\"").arg(info->cachePath()));
+                continue;
+            }
+
             loadCache(info);
+            db.close();
         }
 
         emit info(QString("finished loading data in %1 sec").arg(t.elapsed() / 1000., 0, 'f', 2));
@@ -49,14 +60,45 @@ private:
         return path.isEmpty() ? path : QDir(path).absolutePath();
     }
 
-    void loadCache(FolderInfo* info) {
-        auto db = QSqlDatabase::database();
-        db.setDatabaseName(info->cachePath());
-        if (!db.open()) {
-            emit warning(QString("can't open cache file: \"%1\"").arg(info->cachePath()));
-            return;
+    CachedFiles cachedFiles(const Tutorial* tutorial, const QString& table) {
+        CachedFiles files;
+
+        int index = tutorial->index();
+        Q_ASSERT(index >= 0);
+
+        QSqlQuery query;
+        query.prepare(QString("SELECT name, data, checksum, modified FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
+        query.bindValue(":tutorial_id", index);
+        if (!query.exec()) {
+            emit warning(QString("failed to retrieve cached files from %1").arg(table));
+            return files;
         }
 
+        while (query.next()) {
+            QString name = query.value(0).toString();
+            QByteArray data = query.value(1).toByteArray();
+            QString checksum = query.value(2).toString();
+            QDateTime modified = query.value(3).toDateTime();
+            files[name] = { name, data, checksum, modified };
+        }
+
+        return files;
+    }
+
+    CachedFile cachedInfo(const Tutorial* tutorial) {
+        CachedFiles infos = cachedFiles(tutorial, "infos");
+        if (infos.size() == 0) {
+            emit warning(QString("no info found for tutorial: \"%1\"").arg(tutorial->title()));
+            return CachedFile();
+        } else if (infos.size() > 1) {
+            emit warning(QString("more than one info found for tutorial: \"%1\"").arg(tutorial->title()));
+            return CachedFile();
+        } else {
+            return infos.first();
+        }
+    }
+
+    void loadCache(FolderInfo* info) {
         QSqlQuery query("SELECT"
                         " id,"
                         " title,"
@@ -81,7 +123,8 @@ private:
                         " modified,"
                         " learning_paths,"
                         " tags,"
-                        " extra_tags"
+                        " extra_tags,"
+                        " url"
                         " FROM tutorials");
         int count { 0 };
 
@@ -114,11 +157,15 @@ private:
             t->set_path(absolutePath(query.value(++row).toString()));
             t->set_levels(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_created(query.value(++row).toDateTime());
-            t->set_released(query.value(++row).toDateTime());
+            t->set_released(query.value(++row).toString());
             t->set_modified(query.value(++row).toDateTime());
             t->set_learningPaths(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
+            t->set_url(query.value(++row).toString());
+
+            t->set_info(cachedInfo(t));
+            t->set_images(cachedFiles(t, "images"));
 
             t->moveToThread(m_collection->thread());
 
@@ -137,8 +184,6 @@ private:
 //                t->deleteLater();
 //            }
         }
-
-        db.close();
 
         emit debug(QString("  loaded %1 tutorials from cache: \"%2\"").arg(count).arg(info->cachePath()));
     }
@@ -190,41 +235,6 @@ class CollectionPrivate : public QObject
 
         QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
     }
-
-    Collection::CachedFiles cachedFiles(const Tutorial* tutorial, const QString& table) const {
-        Collection::CachedFiles files;
-
-        const FolderInfo* folderInfo = tutorial->folderInfo();
-        Q_ASSERT(!folderInfo->cachePath().isEmpty());
-
-        int index = tutorial->index();
-        Q_ASSERT(index >= 0);
-
-        auto db = QSqlDatabase::database();
-        db.setDatabaseName(folderInfo->cachePath());
-        if (!db.open()) {
-            qWarning() << "can't open cache file:" << folderInfo->cachePath();
-            return files;
-        }
-
-        QSqlQuery query;
-        query.prepare(QString("SELECT name, data, checksum, modified FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
-        query.bindValue(":tutorial_id", index);
-        if (!query.exec()) {
-            qWarning() << "failed to retrieve cached files from " << table;
-            return files;
-        }
-
-        while (query.next()) {
-            QString name = query.value(0).toString();
-            QByteArray data = query.value(1).toByteArray();
-            QString checksum = query.value(2).toString();
-            QDateTime modified = query.value(3).toDateTime();
-            files[name] = { name, data, checksum, modified };
-        }
-
-        return files;
-    }
 };
 
 Collection::Collection(QObject *parent)
@@ -247,24 +257,6 @@ void Collection::startLoad()
 {
     Q_D(Collection);
     d->startLoad();
-}
-
-Collection::CachedFiles Collection::cachedInfos(const Tutorial *tutorial) const
-{
-    Q_D(const Collection);
-    return d->cachedFiles(tutorial, "infos");
-}
-
-Collection::CachedFiles Collection::cachedImages(const Tutorial *tutorial) const
-{
-    Q_D(const Collection);
-    return d->cachedFiles(tutorial, "images");
-}
-
-Collection::CachedFiles Collection::cachedFiles(const Tutorial *tutorial) const
-{
-    Q_D(const Collection);
-    return d->cachedFiles(tutorial, "files");
 }
 
 } // namespace folders

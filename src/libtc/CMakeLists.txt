@@ -21,6 +21,8 @@ add_library(libtc SHARED
     tc/ui/dockablewidget.h
     tc/ui/dockwidget.cpp
     tc/ui/dockwidget.h
+    tc/ui/infoviewwidget.cpp
+    tc/ui/infoviewwidget.h
     tc/ui/infowidget.cpp
     tc/ui/infowidget.h
     tc/ui/labeledvalue.cpp
@@ -34,6 +36,8 @@ add_library(libtc SHARED
     tc/ui/tutorialswidget.cpp
     tc/ui/tutorialswidget.h
 
+    tc/tutorials/cachedfile.cpp
+    tc/tutorials/cachedfile.h
     tc/tutorials/collection.cpp
     tc/tutorials/collection.h
     tc/tutorials/folderinfo.cpp

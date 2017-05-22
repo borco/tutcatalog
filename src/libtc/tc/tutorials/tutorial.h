@@ -3,7 +3,7 @@
 #include "libtc_global.h"
 #include "QQmlVarPropertyHelpers.h"
 
-#include <QDateTime>
+#include "cachedfile.h"
 
 namespace tc {
 namespace tutorials {
@@ -43,16 +43,19 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
 
     QML_WRITABLE_VAR_PROPERTY(QDateTime, created)   // when was the info.tc created
     QML_WRITABLE_VAR_PROPERTY(QDateTime, modified)  // when was the info.tc modified
-    QML_WRITABLE_VAR_PROPERTY(QDateTime, released)  // when was the tutorial published
+    QML_WRITABLE_VAR_PROPERTY(QString, released)    // when was the tutorial published
 
     QML_WRITABLE_VAR_PROPERTY(QStringList, tags)      // tags filled in by the scrapper (automatically)
     QML_WRITABLE_VAR_PROPERTY(QStringList, extraTags) // tags added manually
     QML_WRITABLE_VAR_PROPERTY(QStringList, learningPaths)
 
+    QML_WRITABLE_VAR_PROPERTY(QString, url)
+    QML_WRITABLE_VAR_PROPERTY(CachedFile, info)
+    QML_WRITABLE_VAR_PROPERTY(CachedFiles, images)
+
 public:
     static const int InvalidTableId { -1 };
     static const int InvalidSize { -1 };
-
     static const int DefaultRating { 0 };
 
     explicit Tutorial(QObject* parent = nullptr);

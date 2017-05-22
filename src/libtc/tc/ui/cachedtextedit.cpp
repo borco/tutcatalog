@@ -35,5 +35,12 @@ void CachedTextEdit::setCachedResources(const CachedResources &data)
     d->data = data;
 }
 
+void CachedTextEdit::clear()
+{
+    Q_D(CachedTextEdit);
+    QTextEdit::clear();
+    d->data.clear();
+}
+
 } // namespace ui
 } // namespace tc
