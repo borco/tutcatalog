@@ -36,7 +36,7 @@ struct ModelPrivate : public QObject
         tr("Cached"),
     };
 
-    QVector<Tutorial*> items;
+    QList<Tutorial*> items;
     QFont m_awesomeFont { ui::Theme::AwesomeFont };
 };
 
@@ -59,7 +59,7 @@ void Model::clear()
     endResetModel();
 }
 
-void Model::append(const QVector<Tutorial *>& tutorials)
+void Model::append(const QList<Tutorial *>& tutorials)
 {
     if (tutorials.isEmpty()) {
         qWarning() << "asked to append tutorials, but no tutorial provided";

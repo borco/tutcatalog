@@ -19,7 +19,8 @@
 namespace tc {
 namespace tutorials {
 
-typedef QVector<FolderInfo*> Infos;
+typedef QList<FolderInfo*> Infos;
+typedef QList<Tutorial*> Tutorials;
 
 class LoaderThread : public QThread
 {
@@ -128,7 +129,7 @@ private:
                         " FROM tutorials");
         int count { 0 };
 
-        QVector<Tutorial*> items;
+        Tutorials items;
 
         while (query.next()) {
             ++count;
@@ -242,7 +243,7 @@ Collection::~Collection()
 {
 }
 
-void Collection::setup(const QVector<FolderInfo *> &infos)
+void Collection::setup(const QList<FolderInfo *> &infos)
 {
     Q_D(Collection);
     d->setup(infos);

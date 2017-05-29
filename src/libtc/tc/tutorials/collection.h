@@ -2,7 +2,6 @@
 
 #include "libtc_global.h"
 #include <QObject>
-#include <QVector>
 
 class QAction;
 
@@ -21,11 +20,11 @@ public:
     explicit Collection(QObject *parent = nullptr);
     ~Collection();
 
-    void setup(const QVector<FolderInfo*>& infos);
+    void setup(const QList<FolderInfo*>& infos);
     void startLoad();
 
 signals:
-    void loaded(const QVector<tc::tutorials::Tutorial*>& tutorials);
+    void loaded(const QList<tc::tutorials::Tutorial*>& tutorials);
 
 private:
     Q_DECLARE_PRIVATE(Collection)

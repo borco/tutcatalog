@@ -44,7 +44,7 @@ private:
     void saveSettings();
 
     Ui::MainWindow *m_ui { nullptr };
-    QVector<tc::Persistent*> m_persistents;
+    QList<tc::Persistent*> m_persistents;
 
     tc::tutorials::Model* m_tutorials { nullptr };
     tc::tutorials::Collection* m_folders { nullptr };

@@ -3,7 +3,6 @@
 #include "libtc_global.h"
 
 #include "QQmlVarPropertyHelpers.h"
-#include <QVector>
 
 namespace tc {
 
@@ -16,7 +15,7 @@ class LIBTCSHARED_EXPORT Project : public QObject
 {
     Q_OBJECT
 
-    QML_WRITABLE_VAR_PROPERTY(QVector<tc::tutorials::FolderInfo*>, folderInfos)
+    QML_WRITABLE_VAR_PROPERTY(QList<tc::tutorials::FolderInfo*>, folderInfos)
     QML_WRITABLE_VAR_PROPERTY(QStringList, videoExtensions)
     QML_WRITABLE_VAR_PROPERTY(QString, ffprobePath)
     QML_WRITABLE_VAR_PROPERTY(QString, scrapScriptPath)
