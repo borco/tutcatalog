@@ -1,7 +1,7 @@
 # libmarkdown (BSD)
 # https://github.com/eduardonunesp/Anomade
 # https://github.com/Orc/discount
-add_library(libmarkdown STATIC
+add_library(libmarkdown SHARED
     markdown/README
     markdown/libs/amalloc.h
     markdown/libs/config.h
