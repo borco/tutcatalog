@@ -43,7 +43,7 @@ public:
     ~Model();
 
     void clear();
-    void append(Tutorial* tutorial);
+    void append(const QVector<Tutorial*>& tutorials);
     void remove(Tutorial* tutorial);
 
     int columnCount(const QModelIndex &parent) const override;

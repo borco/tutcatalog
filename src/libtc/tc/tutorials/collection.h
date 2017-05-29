@@ -2,6 +2,7 @@
 
 #include "libtc_global.h"
 #include <QObject>
+#include <QVector>
 
 class QAction;
 
@@ -24,7 +25,7 @@ public:
     void startLoad();
 
 signals:
-    void loaded(tutorials::Tutorial* tutorial);
+    void loaded(const QVector<tc::tutorials::Tutorial*>& tutorials);
 
 private:
     Q_DECLARE_PRIVATE(Collection)

@@ -59,12 +59,19 @@ void Model::clear()
     endResetModel();
 }
 
-void Model::append(Tutorial *tutorial)
+void Model::append(const QVector<Tutorial *>& tutorials)
 {
+    if (tutorials.isEmpty()) {
+        qWarning() << "asked to append tutorials, but no tutorial provided";
+        return;
+    }
+
     Q_D(Model);
-    beginInsertRows(QModelIndex(), d->items.size(), d->items.size());
-    tutorial->setParent(this);
-    d->items.append(tutorial);
+    beginInsertRows(QModelIndex(), d->items.size(), d->items.size() + tutorials.size() - 1);
+    for(auto t: tutorials) {
+        t->setParent(this);
+    }
+    d->items.append(tutorials);
     endInsertRows();
 }
 

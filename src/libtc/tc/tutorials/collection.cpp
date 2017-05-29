@@ -128,6 +128,8 @@ private:
                         " FROM tutorials");
         int count { 0 };
 
+        QVector<Tutorial*> items;
+
         while (query.next()) {
             ++count;
             auto t = new tutorials::Tutorial;
@@ -164,32 +166,20 @@ private:
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_url(query.value(++row).toString());
 
-            if (t->hasInfo()) {
-                t->set_info(cachedInfo(t));
-                t->set_images(cachedFiles(t, "images"));
-            } else {
-                t->set_info(CachedFile());
-                t->set_images(CachedFiles());
-            }
+//            if (t->hasInfo()) {
+//                t->set_info(cachedInfo(t));
+//                t->set_images(cachedFiles(t, "images"));
+//            } else {
+//                t->set_info(CachedFile());
+//                t->set_images(CachedFiles());
+//            }
 
             t->moveToThread(m_collection->thread());
+            items << t;
 
-            emit m_collection->loaded(t);
-
-            /*
-             * NOTE: allow the GUI thread to do some redrawing
-             * - the frequency and duration where determined by trial and error
-             * - this can be probably be removed if a better way is found
-             *   that allows both fast loading for the data and UI refreshes
-             */
-            if (count % 10 == 0) usleep(1);
-
-//            if (t->parent() == nullptr) {
-//                qWarning() << "deleting unwanted tutorial" << t->title();
-//                t->deleteLater();
-//            }
         }
 
+        emit m_collection->loaded(items);
         emit debug(QString("  loaded %1 tutorials from cache: \"%2\"").arg(count).arg(info->cachePath()));
     }
 
