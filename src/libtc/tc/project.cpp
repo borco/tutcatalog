@@ -81,8 +81,8 @@ public:
 
     bool readFromData(const QByteArray& data) {
         auto node = YAML::Load(data);
-        readStringProperty(node["ffprobe"], Project::set_ffprobePath);
-        readStringProperty(node["scrap script"], Project::set_scrapScriptPath);
+        readStringProperty(node["ffprobe"], &Project::set_ffprobePath);
+        readStringProperty(node["scrap script"], &Project::set_scrapScriptPath);
         readTutorialFolders(node["tutorial folders"]);
         readVideoExtensions(node["video extensions"]);
         return true;
@@ -97,6 +97,7 @@ Project::Project(QObject *parent)
 
 Project::~Project()
 {
+    qDeleteAll(m_folderInfos);
 }
 
 bool Project::readFromFile(const QString &fileName)

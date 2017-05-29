@@ -9,6 +9,7 @@
 #include <QScrollArea>
 
 #include <markdowncxx.h>
+#include <functional>
 
 namespace tc {
 namespace ui {
@@ -143,38 +144,12 @@ class InfoViewWidgetPrivate : public QObject
     }
 
     void connectProperty(QLabel* label,
-                         bool (Tutorial::*getter)() const,
-                         void (Tutorial::*notifier)(bool),
-                         QString yesValue = tr("Yes"),
-                         QString noValue = tr("")) {
-        if (m_tutorial) {
-            auto adapter = [=](bool v) { return v ? yesValue : noValue; };
-            connect(m_tutorial, notifier, this, [=](bool v){ label->setText(adapter(v)); });
-            label->setText(adapter((m_tutorial->*getter)()));
-        } else {
-            label->clear();
-        }
-    }
-
-    void connectProperty(QLabel* label,
-                         int (Tutorial::*getter)() const,
-                         void (Tutorial::*notifier)(int),
-                         QString (*adapter)(int)) {
-        if (m_tutorial) {
-            connect(m_tutorial, notifier, this, [=](int v){ label->setText((*adapter)(v)); });
-            label->setText((*adapter)((m_tutorial->*getter)()));
-        } else {
-            label->clear();
-        }
-    }
-
-    void connectProperty(QLabel* label,
                          qint64 (Tutorial::*getter)() const,
                          void (Tutorial::*notifier)(qint64),
-                         QString (*adapter)(qint64)) {
+                         std::function<QString(qint64)> adapter) {
         if (m_tutorial) {
-            connect(m_tutorial, notifier, this, [=](qint64 v){ label->setText((*adapter)(v)); });
-            label->setText((*adapter)((m_tutorial->*getter)()));
+            connect(m_tutorial, notifier, this, [=](qint64 v){ label->setText(adapter(v)); });
+            label->setText(adapter((m_tutorial->*getter)()));
         } else {
             label->clear();
         }
@@ -186,6 +161,20 @@ class InfoViewWidgetPrivate : public QObject
         if (m_tutorial) {
             auto adapter = [](QDateTime v) { return v.toString(tr("yyyy/MM/dd hh:mm:ss")); };
             connect(m_tutorial, notifier, this, [=](QDateTime v){ label->setText(adapter(v)); });
+            label->setText(adapter((m_tutorial->*getter)()));
+        } else {
+            label->clear();
+        }
+    }
+
+    void connectProperty(QLabel* label,
+                         bool (Tutorial::*getter)() const,
+                         void (Tutorial::*notifier)(bool),
+                         QString yesValue = tr("Yes"),
+                         QString noValue = tr("")) {
+        if (m_tutorial) {
+            auto adapter = [=](bool v) { return v ? yesValue : noValue; };
+            connect(m_tutorial, notifier, this, [=](bool v){ label->setText(adapter(v)); });
             label->setText(adapter((m_tutorial->*getter)()));
         } else {
             label->clear();
@@ -243,9 +232,8 @@ class InfoViewWidgetPrivate : public QObject
         connectProperty(m_isCompleteLabel, &Tutorial::isComplete, &Tutorial::isCompleteChanged, tr(""), tr("<font color=\"red\">NO</font>"));
         connectProperty(m_isViewedLabel, &Tutorial::isViewed, &Tutorial::isViewedChanged);
         connectProperty(m_isDeletedLabel, &Tutorial::isDeleted, &Tutorial::isDeletedChanged);
-//        connectProperty(m_noBackupLabel, &Tutorial::, &Tutorial::);
-        connectProperty(m_durationLabel, &Tutorial::duration, &Tutorial::durationChanged, [=](int v) { return Tutorial::durationAsString(v); });
-        connectProperty(m_ratingLabel, &Tutorial::rating, &Tutorial::ratingChanged, [=](int v) { return Tutorial::ratingAsString(v); });
+        connectProperty(m_durationLabel, &Tutorial::duration, &Tutorial::durationChanged, [=](qint64 v) { return Tutorial::durationAsString(v); });
+        connectProperty(m_ratingLabel, &Tutorial::rating, &Tutorial::ratingChanged, [=](qint64 v) -> QString { return Tutorial::ratingAsString(v); });
         connectProperty(m_sizeLabel, &Tutorial::size, &Tutorial::sizeChanged, [=](qint64 v) { return Tutorial::fileSizeAsString(v); });
         connectProperty(m_levelsLabel, &Tutorial::levels, &Tutorial::levelsChanged);
         connectProperty(m_createdLabel, &Tutorial::created, &Tutorial::createdChanged);

@@ -64,7 +64,7 @@ class TutorialsWidgetPrivate : public QObject
         m_view->setItemDelegateForColumn(tutorials::Model::Size, new FileSizeDelegate(this));
         m_view->setItemDelegateForColumn(tutorials::Model::Duration, new DurationDelegate(this));
 
-        connect(m_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, onSelectionChanged);
+        connect(m_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TutorialsWidgetPrivate::onSelectionChanged);
 
         auto layout = new QVBoxLayout;
         layout->setMargin(0);
@@ -76,10 +76,10 @@ class TutorialsWidgetPrivate : public QObject
         q->setWindowTitle(tr("Tutorials"));
         q->setWindowIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE53B", Theme::MainToolBarIconSize, Theme::MainToolBarIconColor));
 
-        auto action = new Action;
+        auto action = new Action(q);
         action->set_instantPopup(true);
         action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uF141", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
-        m_hideColumnsMenu = new QMenu;
+        m_hideColumnsMenu = new QMenu(q);
         action->setMenu(m_hideColumnsMenu);
 
         m_dockToolBarAction.append(action);
@@ -123,7 +123,7 @@ class TutorialsWidgetPrivate : public QObject
         m_hideColumnsMenu->clear();
         m_columns.clear();
 
-        auto showAllAction = new Action;
+        auto showAllAction = new Action(this);
         showAllAction->setText(tr("All"));
         showAllAction->setToolTip(tr("Show all columns"));
         m_hideColumnsMenu->addAction(showAllAction);
@@ -131,7 +131,7 @@ class TutorialsWidgetPrivate : public QObject
 
         for (int i = 0; i < m_model->columns().size(); ++i) {
             auto text = m_model->columns()[i];
-            auto action = new Action;
+            auto action = new Action(this);
             action->setText(text);
             action->setCheckable(true);
             action->setChecked(true);

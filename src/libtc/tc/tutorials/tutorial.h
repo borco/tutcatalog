@@ -36,8 +36,8 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(bool, isDeleted)      // true: you've had this tutorial, but deleted its files (except info*, image* and cover*)
     QML_WRITABLE_VAR_PROPERTY(bool, isOnline)       // true: this was never stored locally - all info is online
     QML_WRITABLE_VAR_PROPERTY(bool, noBackup)       // true: this tutorial isn't backed up
-    QML_WRITABLE_VAR_PROPERTY(int, duration)        // total tutorial duration, in minutes
-    QML_WRITABLE_VAR_PROPERTY(int, rating)          // -5 .. +5: your rating
+    QML_WRITABLE_VAR_PROPERTY(qint64, duration)     // total tutorial duration, in minutes
+    QML_WRITABLE_VAR_PROPERTY(qint64, rating)       // -5 .. +5: your rating
     QML_WRITABLE_VAR_PROPERTY(qint64, size)         // total size on disk (in kB)
     QML_WRITABLE_VAR_PROPERTY(QStringList, levels)  // beginner, intermediate, advanced (or combinations or none)
 
@@ -57,14 +57,14 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
 
 public:
     static const int InvalidTableId { -1 };
-    static const int InvalidSize { -1 };
-    static const int DefaultRating { 0 };
+    static const qint64 InvalidSize { -1 };
+    static const qint64 DefaultRating { 0 };
 
     explicit Tutorial(QObject* parent = nullptr);
 
     static QString fileSizeAsString(qint64 size);
-    static QString ratingAsString(int rating);
-    static QString durationAsString(int duration);
+    static QString ratingAsString(qint64 rating);
+    static QString durationAsString(qint64 duration);
 
     bool hasCanonicalPath() const;
     QString canonicalPath() const;

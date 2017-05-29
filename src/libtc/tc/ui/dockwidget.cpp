@@ -44,11 +44,11 @@ class DockWidgetPrivate: public QObject
             }
         }
 
-        auto empty = new QWidget();
+        auto empty = new QWidget;
         empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
         tb->addWidget(empty);
 
-        auto action = new QAction;
+        auto action = new QAction(this);
         action->setIcon(Pixmap::fromFont(Theme::AwesomeFont, "\uf08d", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         connect(action, &QAction::toggled, [=](bool value) { q->setFloating(!value); });
         connect(q, &DockWidget::topLevelChanged, [=](bool value) {
@@ -60,7 +60,7 @@ class DockWidgetPrivate: public QObject
         action->setChecked(true);
         tb->addAction(action);
 
-        action = new QAction;
+        action = new QAction(this);
         action->setIcon(Pixmap::fromFont(Theme::MaterialFont, "\uE5CD", Theme::DockToolBarIconSize, Theme::DockToolBarIconColor));
         connect(action, &QAction::triggered, q, &QDockWidget::close);
         tb->addAction(action);

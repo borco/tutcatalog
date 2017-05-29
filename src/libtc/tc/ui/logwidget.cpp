@@ -23,6 +23,8 @@ class LogWidgetPrivate: public QObject
 {
 public:
     ~LogWidgetPrivate() {
+        qDeleteAll(m_dockToolBarActions);
+        qDeleteAll(m_appToolBarActions);
         qInstallMessageHandler(0);
     }
 
