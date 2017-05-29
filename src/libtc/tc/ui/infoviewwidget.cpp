@@ -1,6 +1,7 @@
 #include "infoviewwidget.h"
 #include "cachedtextedit.h"
 #include "tc/tutorials/collection.h"
+#include "tc/tutorials/folderinfo.h"
 #include "tc/tutorials/tutorial.h"
 
 #include <QDebug>
@@ -181,6 +182,20 @@ class InfoViewWidgetPrivate : public QObject
         }
     }
 
+    void connectProperty(QLabel* label,
+                         bool (Tutorial::*getter)() const,
+                         void (FolderInfo::*notifier)(QString),
+                         QString yesValue = tr("Yes"),
+                         QString noValue = tr("")) {
+        if (m_tutorial) {
+            auto adapter = [=](bool v) { return v ? yesValue : noValue; };
+            connect(m_tutorial->folderInfo(), notifier, this, [=](){ label->setText(adapter((m_tutorial->*getter)())); });
+            label->setText(adapter((m_tutorial->*getter)()));
+        } else {
+            label->clear();
+        }
+    }
+
     void updateDescription() {
         if (m_tutorial->hasInfo()) {
             auto images = m_tutorial->images();
@@ -212,7 +227,7 @@ class InfoViewWidgetPrivate : public QObject
 
         m_tutorial = tutorial;
 
-        connectProperty(m_isCachedLabel, &Tutorial::isCached, &Tutorial::isCachedChanged, tr("<font color=\"red\">YES</font>"), tr(""));
+        connectProperty(m_isCachedLabel, &Tutorial::isCached, &FolderInfo::cachePathChanged, tr("<font color=\"red\">YES</font>"));
 
         connectProperty(m_pathLabel, &Tutorial::path, &Tutorial::pathChanged,
                         [](Tutorial* tutorial, QString v){

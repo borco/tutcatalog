@@ -23,6 +23,8 @@ public:
     void setup(const QList<FolderInfo*>& infos);
     void startLoad();
 
+    void update(Tutorial* tutorial);
+
 signals:
     void loaded(const QList<tc::tutorials::Tutorial*>& tutorials);
 

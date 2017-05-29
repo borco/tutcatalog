@@ -61,44 +61,6 @@ private:
         return path.isEmpty() ? path : QDir(path).absolutePath();
     }
 
-    CachedFiles cachedFiles(const Tutorial* tutorial, const QString& table) {
-        CachedFiles files;
-
-        int index = tutorial->index();
-        Q_ASSERT(index >= 0);
-
-        QSqlQuery query;
-        query.prepare(QString("SELECT name, data, checksum, modified FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
-        query.bindValue(":tutorial_id", index);
-        if (!query.exec()) {
-            emit warning(QString("failed to retrieve cached files from %1").arg(table));
-            return files;
-        }
-
-        while (query.next()) {
-            QString name = query.value(0).toString();
-            QByteArray data = query.value(1).toByteArray();
-            QString checksum = query.value(2).toString();
-            QDateTime modified = query.value(3).toDateTime();
-            files[name] = { name, data, checksum, modified };
-        }
-
-        return files;
-    }
-
-    CachedFile cachedInfo(const Tutorial* tutorial) {
-        CachedFiles infos = cachedFiles(tutorial, "infos");
-        if (infos.size() == 0) {
-            emit warning(QString("no info found for tutorial: \"%1\"").arg(tutorial->title()));
-            return CachedFile();
-        } else if (infos.size() > 1) {
-            emit warning(QString("more than one info found for tutorial: \"%1\"").arg(tutorial->title()));
-            return CachedFile();
-        } else {
-            return infos.first();
-        }
-    }
-
     void loadCache(FolderInfo* info) {
         QSqlQuery query("SELECT"
                         " id,"
@@ -136,7 +98,6 @@ private:
             auto t = new tutorials::Tutorial;
             t->set_collection(m_collection);
             t->set_folderInfo(info);
-            t->set_isCached(true);
             t->set_isReadOnly(true);
 
             int row = -1;
@@ -166,14 +127,6 @@ private:
             t->set_tags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_extraTags(query.value(++row).toString().split(",", QString::SkipEmptyParts));
             t->set_url(query.value(++row).toString());
-
-//            if (t->hasInfo()) {
-//                t->set_info(cachedInfo(t));
-//                t->set_images(cachedFiles(t, "images"));
-//            } else {
-//                t->set_info(CachedFile());
-//                t->set_images(CachedFiles());
-//            }
 
             t->moveToThread(m_collection->thread());
             items << t;
@@ -211,6 +164,18 @@ class CollectionPrivate : public QObject
         }
     }
 
+    QSqlDatabase openDb(const QString& path) const {
+        auto db = QSqlDatabase::database();
+        db.setDatabaseName(path);
+
+        if (!db.open()) {
+            qWarning() << "can't open cache file:" << path;
+            return QSqlDatabase();
+        }
+
+        return db;
+    }
+
     void startLoad() {
         Q_Q(Collection);
         static LoaderThread* loader { nullptr };
@@ -230,6 +195,63 @@ class CollectionPrivate : public QObject
         connect(loader, &LoaderThread::warning, this, [](QString message){ qWarning().noquote() << message; });
 
         QMetaObject::invokeMethod(loader, "start", Qt::QueuedConnection);
+    }
+
+    CachedFiles cachedFiles(const Tutorial* tutorial, const QString& table) {
+        CachedFiles files;
+
+        auto db = openDb(tutorial->folderInfo()->cachePath());
+        if (!db.isOpen())
+            return files;
+
+        int index = tutorial->index();
+        Q_ASSERT(index >= 0);
+
+        QSqlQuery query;
+        query.prepare(QString("SELECT name, data, checksum, modified FROM %1 WHERE tutorial_id=:tutorial_id").arg(table));
+        query.bindValue(":tutorial_id", index);
+        if (!query.exec()) {
+            qWarning() << "failed to retrieve cached files from:" << table;
+            return files;
+        }
+
+        while (query.next()) {
+            QString name = query.value(0).toString();
+            QByteArray data = query.value(1).toByteArray();
+            QString checksum = query.value(2).toString();
+            QDateTime modified = query.value(3).toDateTime();
+            files[name] = { name, data, checksum, modified };
+        }
+
+        db.close();
+
+        return files;
+    }
+
+    CachedFile cachedInfo(const Tutorial* tutorial) {
+        CachedFiles infos = cachedFiles(tutorial, "infos");
+        if (infos.size() == 0) {
+            qWarning() << "no info found for tutorial:" << tutorial->title();
+            return CachedFile();
+        } else if (infos.size() > 1) {
+            qWarning() << "more than one info found for tutorial:" << tutorial->title();
+            return CachedFile();
+        } else {
+            return infos.first();
+        }
+    }
+
+    void update(Tutorial* t) {
+        if (t->hasInfo()) {
+            if (t->info().data.isEmpty()) {
+                qDebug() << "reading info from cache for tutorial:" << t->title();
+                t->set_info(cachedInfo(t));
+                t->set_images(cachedFiles(t, "images"));
+            }
+        } else {
+            t->set_info(CachedFile());
+            t->set_images(CachedFiles());
+        }
     }
 };
 
@@ -253,6 +275,12 @@ void Collection::startLoad()
 {
     Q_D(Collection);
     d->startLoad();
+}
+
+void Collection::update(Tutorial *tutorial)
+{
+    Q_D(Collection);
+    d->update(tutorial);
 }
 
 } // namespace folders

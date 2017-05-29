@@ -74,6 +74,7 @@ class InfoWidgetPrivate : public QObject
         } else if (selection.size() == 1) {
             m_stackedWidget->setCurrentWidget(m_singleSelectionPage);
             tutorials::Tutorial* t = selection.values()[0];
+            t->update();
             m_infoView->setTutorial(t);
         } else {
             m_stackedWidget->setCurrentWidget(m_multipleSelectionPage);

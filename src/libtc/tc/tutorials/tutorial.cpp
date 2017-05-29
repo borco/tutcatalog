@@ -1,4 +1,6 @@
 #include "tutorial.h"
+#include "collection.h"
+#include "folderinfo.h"
 
 #include <QDebug>
 #include <QDir>
@@ -18,7 +20,6 @@ Tutorial::Tutorial(QObject *parent)
     , m_collection(nullptr)
     , m_folderInfo(nullptr)
     , m_index(InvalidTableId)
-    , m_isCached(true)
     , m_isReadOnly(true)
     , m_hasInfo(false)
     , m_hasChecksum(false)
@@ -87,6 +88,16 @@ bool Tutorial::hasCanonicalPath() const
 QString Tutorial::canonicalPath() const
 {
     return QFileInfo(m_path).dir().filePath(m_title);
+}
+
+bool Tutorial::isCached() const
+{
+    return m_folderInfo && !m_folderInfo->cachePath().isEmpty();
+}
+
+void Tutorial::update()
+{
+    m_collection->update(this);
 }
 
 } // namespace tutorials

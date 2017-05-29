@@ -19,7 +19,6 @@ class LIBTCSHARED_EXPORT Tutorial : public QObject
     QML_WRITABLE_VAR_PROPERTY(tc::tutorials::FolderInfo*, folderInfo)
     QML_WRITABLE_VAR_PROPERTY(int, index)           // an ID to identify the tutorial in the cache (it's id/rowid value)
 
-    QML_WRITABLE_VAR_PROPERTY(bool, isCached)
     QML_WRITABLE_VAR_PROPERTY(bool, isReadOnly)
 
     QML_WRITABLE_VAR_PROPERTY(QString, path)        // the full disk path
@@ -68,6 +67,11 @@ public:
 
     bool hasCanonicalPath() const;
     QString canonicalPath() const;
+
+    bool isCached() const;
+
+    // helpers
+    void update();
 
 signals:
     void canonicalPathChanged(QString canonicalPath);
